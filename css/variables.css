@@ -1,0 +1,170 @@
+﻿/* ============================================================
+   variables.css â€” design tokens (global design system)
+   ============================================================ */
+
+:root {
+  /* ---------- Typography ---------- */
+  --font-sans: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Cascadia Code", "Consolas", "SF Mono", monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.875rem;
+  --text-3xl: 2.25rem;
+  --text-4xl: 3rem;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+
+  --leading-tight: 1.2;
+  --leading-snug: 1.4;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.04em;
+
+  /* ---------- Color Â· neutral (slate scale) ---------- */
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --gray-900: #0f172a;
+
+  --color-bg: var(--gray-50);
+  --color-surface: #ffffff;
+  --color-surface-muted: var(--gray-100);
+  --color-border: var(--gray-200);
+  --color-border-strong: var(--gray-300);
+
+  --color-text: var(--gray-900);
+  --color-text-muted: var(--gray-600);
+  --color-text-subtle: var(--gray-400);
+  --color-inverse: #ffffff;
+
+  /* ---------- Color Â· brand (blue) ---------- */
+  --brand-50: #eff6ff;
+  --brand-100: #dbeafe;
+  --brand-200: #bfdbfe;
+  --brand-300: #93c5fd;
+  --brand-400: #60a5fa;
+  --brand-500: #3b82f6;
+  --brand-600: #2563eb;
+  --brand-700: #1d4ed8;
+  --brand-800: #1e40af;
+  --brand-900: #1e3a8a;
+
+  --color-primary: var(--brand-600);
+  --color-primary-hover: var(--brand-700);
+  --color-primary-subtle: var(--brand-50);
+  --color-primary-text: var(--brand-700);
+
+  /* ---------- Color Â· secondary (violet) ---------- */
+  --violet-500: #8b5cf6;
+  --violet-600: #7c3aed;
+  --violet-700: #6d28d9;
+  --violet-50: #f5f3ff;
+
+  --color-secondary: var(--violet-600);
+  --color-secondary-subtle: var(--violet-50);
+
+  /* ---------- Color Â· accent (cyan) ---------- */
+  --cyan-500: #06b6d4;
+  --color-accent: var(--cyan-500);
+
+  /* ---------- Color Â· semantic ---------- */
+  --success-50: #ecfdf5;
+  --success-600: #059669;
+  --success-700: #047857;
+  --color-success: var(--success-600);
+
+  --warning-50: #fffbeb;
+  --warning-600: #d97706;
+  --color-warning: var(--warning-600);
+
+  --danger-50: #fef2f2;
+  --danger-600: #dc2626;
+  --danger-700: #b91c1c;
+  --danger-600-subtle: #fee2e2;
+  --color-danger: var(--danger-600);
+  --color-danger-hover: var(--danger-700);
+
+  /* ---------- Gradients ---------- */
+  --gradient-brand: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  --gradient-brand-soft: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
+  --gradient-visual: linear-gradient(150deg, #1d4ed8 0%, #6d28d9 55%, #be185d 105%);
+
+  /* ---------- Spacing (4 px base scale) ---------- */
+  --spacing-2xs: 0.25rem;   /*  4 */
+  --spacing-xs: 0.5rem;     /*  8 */
+  --spacing-sm: 0.75rem;    /* 12 */
+  --spacing-md: 1rem;       /* 16 */
+  --spacing-lg: 1.5rem;     /* 24 */
+  --spacing-xl: 2rem;       /* 32 */
+  --spacing-2xl: 3rem;      /* 48 */
+  --spacing-3xl: 4rem;      /* 64 */
+  --spacing-4xl: 6rem;      /* 96 */
+
+  --container-max: 76rem;        /* 1216 */
+  --container-narrow: 58rem;
+  --container-fluid: 100%;
+
+  /* ---------- Radii ---------- */
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.125rem;
+  --radius-pill: 999px;
+  --radius-full: 50%;
+
+  /* ---------- Borders ---------- */
+  --border-width: 1px;
+  --border-solid: var(--border-width) solid var(--color-border);
+
+  /* ---------- Shadows ---------- */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.07), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.12);
+  --shadow-xl: 0 24px 48px rgba(15, 23, 42, 0.16);
+  --shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.25);
+  --shadow-focus-danger: 0 0 0 3px rgba(220, 38, 38, 0.22);
+
+  /* ---------- Breakpoints (min-width media queries) ---------- */
+  --bp-sm: 40rem;   /*  640 */
+  --bp-md: 48rem;   /*  768 */
+  --bp-lg: 64rem;   /* 1024 */
+  --bp-xl: 75rem;   /* 1200 */
+
+  /* ---------- Motion ---------- */
+  --transition-fast: 150ms cubic-bezier(0.3, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.3, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.3, 0, 0.2, 1);
+
+  /* ---------- Z-index ---------- */
+  --z-base: 0;
+  --z-sticky: 100;
+  --z-overlay: 200;
+  --z-drawer: 300;
+  --z-modal: 400;
+
+  /* ---------- Component sizing ---------- */
+  --header-height: 4rem;
+  --sidebar-width: 15.5rem;
+  --sidebar-width-collapsed: 4.5rem;
+  --input-height: 2.75rem;
+  --auth-card-width: 30rem;
+}

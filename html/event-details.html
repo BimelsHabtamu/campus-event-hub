@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Event details, schedule, location, and countdown on Campus Event & Activity Hub.">
+  <title>Event Details · Campus Event &amp; Activity Hub</title>
+  <link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout-public.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- ==================== Public Navbar ==================== -->
+  <header class="navbar" id="site-header">
+    <div class="navbar-inner container">
+      <button
+        class="icon-btn nav-toggle"
+        type="button"
+        id="nav-toggle"
+        aria-controls="nav-menu"
+        aria-expanded="false"
+        aria-label="Toggle navigation menu"
+      >
+        <svg class="icon icon-open" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg class="icon icon-close" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+
+      <a class="brand" href="index.html">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path fill="currentColor" d="M12 2.6l2.3 5.4 5.9.6-4.4 4 1.3 5.7L12 15.5l-5.2 2.8 1.4-5.7-4.4-4 5.9-.6z"/>
+          </svg>
+        </span>
+        <span class="brand-name">Campus<em>Hub</em></span>
+      </a>
+
+      <nav class="nav-menu" id="nav-menu" aria-label="Primary">
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="events.html" class="active" aria-current="page">Events</a></li>
+          <li><a href="app.html#/saved">Saved</a></li>
+          <li><a href="app.html#/dashboard">Dashboard</a></li>
+        </ul>
+        <div class="nav-actions" id="nav-actions">
+          <a class="btn btn-ghost" href="login.html">Log in</a>
+          <a class="btn btn-primary" href="register.html">Get started</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ==================== Main Content ==================== -->
+  <main id="main-content" class="app-main event-detail-shell">
+    <div class="container">
+
+      <!-- Breadcrumb / Back Link -->
+      <a class="event-back-link" href="events.html" id="event-back-btn">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back to all events
+      </a>
+
+      <!-- Professional Event Not Found State -->
+      <section id="event-not-found" class="event-not-found-card" hidden>
+        <div class="event-not-found-icon">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="15" r="1" fill="currentColor"/>
+            <path d="M12 11.5a1.5 1.5 0 011.5 1.5c0 1-1.5 1.5-1.5 1.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h1 class="event-not-found-title">Event Not Found</h1>
+        <p class="event-not-found-desc">
+          We couldn’t find an event matching <span id="invalid-event-id" style="font-weight:var(--weight-bold);color:var(--color-text);"></span>.
+          It may have concluded, been moved, or the link may be incomplete.
+        </p>
+        <div class="event-not-found-actions">
+          <a class="btn btn-primary" href="events.html">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"/>
+              <path d="M20 20l-3.5-3.5"/>
+            </svg>
+            Browse all events
+          </a>
+          <a class="btn btn-secondary" href="index.html">Return to Home</a>
+        </div>
+      </section>
+
+      <!-- Event Details Content -->
+      <div id="event-content" class="event-detail-container">
+
+        <!-- Top Header Card -->
+        <header class="event-detail-header">
+          <div class="event-detail-meta-top">
+            <div class="event-detail-badges">
+              <span id="event-category-badge" class="badge badge-brand">Workshop</span>
+              <span id="event-status-badge" class="badge badge-upcoming">Upcoming</span>
+            </div>
+            <div style="display:flex;gap:var(--spacing-xs);align-items:center;">
+              <button class="btn btn-secondary btn-sm btn-save-event" type="button" aria-pressed="false" aria-label="Save this event">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5h12V20l-6-4-6 4z"/></svg>
+                <span class="save-btn-text">Save event</span>
+              </button>
+              <button id="btn-share-event" class="btn btn-ghost btn-sm" type="button" aria-label="Share event link">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+                Share
+              </button>
+            </div>
+          </div>
+          <h1 id="event-title" class="event-detail-title">Loading event…</h1>
+          <p class="event-detail-organizer-line">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:1rem;height:1rem;"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.5 4.2-5 8-5s6.5 1.5 8 5"/></svg>
+            Organized by <strong id="event-organizer-name">Club</strong>
+          </p>
+        </header>
+
+        <!-- Live Countdown Section (Upcoming Events) -->
+        <section id="countdown-section" class="countdown-card" aria-label="Countdown to event start" hidden>
+          <div class="countdown-card-header">
+            <span class="countdown-title">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+              Event Starts In
+            </span>
+            <span class="text-xs text-muted">Live countdown</span>
+          </div>
+          <div class="countdown-grid" role="timer" aria-live="off">
+            <div class="countdown-segment">
+              <span id="countdown-days" class="countdown-number">00</span>
+              <span class="countdown-unit">Days</span>
+            </div>
+            <div class="countdown-segment">
+              <span id="countdown-hours" class="countdown-number">00</span>
+              <span class="countdown-unit">Hours</span>
+            </div>
+            <div class="countdown-segment">
+              <span id="countdown-minutes" class="countdown-number">00</span>
+              <span class="countdown-unit">Minutes</span>
+            </div>
+            <div class="countdown-segment">
+              <span id="countdown-seconds" class="countdown-number">00</span>
+              <span class="countdown-unit">Seconds</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Happening Now Banner -->
+        <div id="event-live-banner" class="event-state-banner is-live" hidden>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4z"/></svg>
+          <div>
+            <strong>This event is happening right now!</strong>
+            <p id="live-banner-times" style="margin:0;font-size:var(--text-xs);opacity:0.9;"></p>
+          </div>
+        </div>
+
+        <!-- Completed Event Banner -->
+        <div id="event-completed-banner" class="event-state-banner is-completed" hidden>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+          <div>
+            <strong>This event has concluded.</strong>
+            <p id="completed-banner-date" style="margin:0;font-size:var(--text-xs);"></p>
+          </div>
+        </div>
+
+        <!-- Main 2-Column Responsive Grid -->
+        <div class="event-detail-grid" style="margin-top:var(--spacing-xl);">
+
+          <!-- Left / Main Column -->
+          <div class="event-detail-main">
+            <!-- Event Cover Image -->
+            <div class="event-detail-media">
+              <img id="event-image" class="event-detail-img" src="../images/placeholder-event.svg" alt="Event preview">
+            </div>
+
+            <!-- About Section -->
+            <section class="card" style="padding:var(--spacing-xl);">
+              <h2 class="event-section-title">About This Event</h2>
+              <p id="event-description" class="event-description-body"></p>
+
+              <!-- Tags -->
+              <div id="event-tags-container" style="margin-top:var(--spacing-lg);" hidden>
+                <span class="text-xs text-subtle" style="display:block;margin-bottom:var(--spacing-2xs);text-transform:uppercase;font-weight:var(--weight-semibold);letter-spacing:var(--tracking-wide);">Tags</span>
+                <div id="event-tags-list" class="event-tags-list"></div>
+              </div>
+            </section>
+
+            <!-- Registration Information (Informational for Stage 5) -->
+            <section class="event-registration-card">
+              <span class="event-registration-badge">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:1rem;height:1rem;"><path d="M9 12l2 2 4-4m5.6 2.4A9 9 0 113.6 8.6"/></svg>
+                Registration &amp; Access
+              </span>
+              <h3 class="event-registration-title">Event Registration Info</h3>
+              <p class="event-registration-desc">
+                Admission is free for all currently enrolled students and campus staff. Seating and supplies are allocated on a first-come, first-served basis up to venue capacity.
+              </p>
+              <div class="event-registration-meta-grid">
+                <div class="event-reg-stat">
+                  <span class="event-reg-stat-label">Total Capacity</span>
+                  <span id="reg-capacity-val" class="event-reg-stat-val">—</span>
+                </div>
+                <div class="event-reg-stat">
+                  <span class="event-reg-stat-label">Admission</span>
+                  <span class="event-reg-stat-val">Free (Student ID)</span>
+                </div>
+                <div class="event-reg-stat">
+                  <span class="event-reg-stat-label">Online Booking</span>
+                  <span class="event-reg-stat-val">Opens in Stage 6</span>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-lg" type="button" disabled style="width:100%;">
+                Register for Event (Coming in Stage 6)
+              </button>
+            </section>
+          </div>
+
+          <!-- Right / Sidebar Column -->
+          <aside class="event-detail-sidebar" aria-label="Event information">
+            <!-- Event Quick Info Card -->
+            <div class="card event-sidebar-card">
+              <h3 class="event-sidebar-title">Date &amp; Location</h3>
+              <div class="event-meta-list">
+                <!-- Date -->
+                <div class="event-meta-item">
+                  <span class="event-meta-icon" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+                  </span>
+                  <div class="event-meta-text">
+                    <span class="event-meta-label">Date</span>
+                    <span id="meta-date-val" class="event-meta-value">—</span>
+                  </div>
+                </div>
+
+                <!-- Time -->
+                <div class="event-meta-item">
+                  <span class="event-meta-icon" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                  </span>
+                  <div class="event-meta-text">
+                    <span class="event-meta-label">Time</span>
+                    <span id="meta-time-val" class="event-meta-value">—</span>
+                    <span id="meta-duration-val" class="event-meta-subvalue">—</span>
+                  </div>
+                </div>
+
+                <!-- Location -->
+                <div class="event-meta-item">
+                  <span class="event-meta-icon" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 21s-7-5.1-7-11a7 7 0 0114 0c0 5.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                  </span>
+                  <div class="event-meta-text">
+                    <span class="event-meta-label">Location</span>
+                    <span id="meta-location-val" class="event-meta-value">—</span>
+                  </div>
+                </div>
+
+                <!-- Organizer -->
+                <div class="event-meta-item">
+                  <span class="event-meta-icon" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.5 4.2-5 8-5s6.5 1.5 8 5"/></svg>
+                  </span>
+                  <div class="event-meta-text">
+                    <span class="event-meta-label">Organizer</span>
+                    <span id="meta-organizer-val" class="event-meta-value">—</span>
+                  </div>
+                </div>
+
+                <!-- Capacity -->
+                <div class="event-meta-item">
+                  <span class="event-meta-icon" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                  </span>
+                  <div class="event-meta-text">
+                    <span class="event-meta-label">Capacity</span>
+                    <span id="meta-capacity-val" class="event-meta-value">—</span>
+                  </div>
+                </div>
+
+                <!-- Category -->
+                <div class="event-meta-item">
+                  <span class="event-meta-icon" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M5 21V4M5 5h13l-3 4 3 4H5"/></svg>
+                  </span>
+                  <div class="event-meta-text">
+                    <span class="event-meta-label">Category</span>
+                    <span id="meta-category-val" class="event-meta-value">—</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Card -->
+            <div class="card event-action-card">
+              <button class="btn btn-secondary btn-save-event" type="button" aria-pressed="false">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5h12V20l-6-4-6 4z"/></svg>
+                <span class="save-btn-text">Save event</span>
+              </button>
+              <a class="btn btn-ghost" href="events.html" style="width:100%;">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+                Browse other events
+              </a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================== Footer ==================== -->
+  <footer class="footer">
+    <div class="container footer-main">
+      <div class="footer-brand">
+        <a class="brand" href="index.html">
+          <span class="brand-mark">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2.6l2.3 5.4 5.9.6-4.4 4 1.3 5.7L12 15.5l-5.2 2.8 1.4-5.7-4.4-4 5.9-.6z"/></svg>
+          </span>
+          <span class="brand-name">Campus<em>Hub</em></span>
+        </a>
+        <p>The community-built event platform for university students — discover what your campus has to offer.</p>
+      </div>
+
+      <div>
+        <p class="footer-heading">Platform</p>
+        <ul class="footer-links">
+          <li><a href="events.html">Browse events</a></li>
+          <li><a href="app.html#/saved">Saved events</a></li>
+          <li><a href="app.html#/dashboard">Dashboard</a></li>
+          <li><a href="login.html">Log in</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="footer-heading">Categories</p>
+        <ul class="footer-links">
+          <li><a href="events.html?cat=workshop">Workshops</a></li>
+          <li><a href="events.html?cat=hackathon">Hackathons</a></li>
+          <li><a href="events.html?cat=career">Career events</a></li>
+          <li><a href="events.html?cat=sports">Sports</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-newsletter">
+        <p class="footer-heading">Stay in the loop</p>
+        <p>Weekly digest of the best events on campus. No spam.</p>
+        <form class="search-bar" role="form" aria-label="Newsletter signup" onsubmit="event.preventDefault();alert('Subscribed to event digest!');">
+          <label class="visually-hidden" for="newsletter-email">Email address</label>
+          <input id="newsletter-email" class="input" type="email" placeholder="you@university.edu" autocomplete="email">
+          <button class="btn btn-accent" type="submit">Join</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom container">
+      <p>© 2026 Campus Event &amp; Activity Hub. A student project.</p>
+      <nav aria-label="Legal">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script type="module" src="../js/event-details.js"></script>
+  <noscript>
+    <p class="text-center" style="padding:1rem;">JavaScript is required to view event details and countdown.</p>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Browse and search campus events — workshops, hackathons, seminars, sports, and cultural activities.">
+  <title>Browse Events · Campus Event &amp; Activity Hub</title>
+  <link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout-public.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- ==================== Public Navbar ==================== -->
+  <header class="navbar" id="site-header">
+    <div class="navbar-inner container">
+      <button
+        class="icon-btn nav-toggle"
+        type="button"
+        id="nav-toggle"
+        aria-controls="nav-menu"
+        aria-expanded="false"
+        aria-label="Toggle navigation menu"
+      >
+        <svg class="icon icon-open" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg class="icon icon-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+
+      <a class="brand" href="index.html">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2.6l2.3 5.4 5.9.6-4.4 4 1.3 5.7L12 15.5l-5.2 2.8 1.4-5.7-4.4-4 5.9-.6z"/></svg>
+        </span>
+        <span class="brand-name">Campus<em>Hub</em></span>
+      </a>
+
+      <nav class="nav-menu" id="nav-menu" aria-label="Primary">
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="events.html" class="active" aria-current="page">Events</a></li>
+          <li><a href="app.html#/saved">Saved</a></li>
+          <li><a href="app.html#/dashboard">Dashboard</a></li>
+        </ul>
+        <div class="nav-actions" id="nav-actions">
+          <a class="btn btn-ghost" href="login.html">Log in</a>
+          <a class="btn btn-primary" href="register.html">Get started</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ==================== Main Browse Events ==================== -->
+  <main id="main-content" class="app-main" style="padding-block:var(--spacing-2xl) var(--spacing-3xl);">
+    <div class="container">
+      <header class="view-header">
+        <h1>Browse Events</h1>
+        <p id="events-result-count" class="result-count">Loading events…</p>
+
+        <!-- Search Bar -->
+        <form id="search-form" class="search-bar" role="search" aria-label="Search campus events">
+          <label class="visually-hidden" for="search-input">Search events</label>
+          <div class="search-wrap">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input id="search-input" class="input" type="search" placeholder="Search workshops, hackathons, seminars…" autocomplete="off">
+          </div>
+          <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        <!-- Filters Bar -->
+        <div id="filter-bar" class="filter-bar" role="group" aria-label="Event filters">
+          <label class="visually-hidden" for="category-filter">Filter by category</label>
+          <select id="category-filter" class="select">
+            <option value="all">All categories</option>
+          </select>
+
+          <label class="visually-hidden" for="date-filter">Filter by date</label>
+          <select id="date-filter" class="select">
+            <option value="all">All dates</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="today">Today</option>
+            <option value="this-week">This week</option>
+            <option value="past">Past</option>
+          </select>
+
+          <label class="visually-hidden" for="sort-select">Sort events</label>
+          <select id="sort-select" class="select">
+            <option value="nearest">Sort: Nearest date</option>
+            <option value="latest">Sort: Latest date</option>
+            <option value="az">Sort: A–Z</option>
+          </select>
+        </div>
+      </header>
+
+      <!-- Events Grid -->
+      <div id="events-grid" class="events-grid" style="margin-top:var(--spacing-xl);">
+        <!-- Cards dynamically loaded from data.js -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="events-empty" class="empty-state" hidden style="margin-top:var(--spacing-2xl);">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:3rem;height:3rem;color:var(--color-text-subtle);"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <p id="events-empty-text" style="margin-top:var(--spacing-sm);font-size:var(--text-base);color:var(--color-text-muted);">
+          No events found matching your search.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================== Footer ==================== -->
+  <footer class="footer">
+    <div class="container footer-main">
+      <div class="footer-brand">
+        <a class="brand" href="index.html">
+          <span class="brand-mark">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2.6l2.3 5.4 5.9.6-4.4 4 1.3 5.7L12 15.5l-5.2 2.8 1.4-5.7-4.4-4 5.9-.6z"/></svg>
+          </span>
+          <span class="brand-name">Campus<em>Hub</em></span>
+        </a>
+        <p>The community-built event platform for university students — discover what your campus has to offer.</p>
+      </div>
+
+      <div>
+        <p class="footer-heading">Platform</p>
+        <ul class="footer-links">
+          <li><a href="events.html">Browse events</a></li>
+          <li><a href="app.html#/saved">Saved events</a></li>
+          <li><a href="app.html#/dashboard">Dashboard</a></li>
+          <li><a href="login.html">Log in</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="footer-heading">Categories</p>
+        <ul class="footer-links">
+          <li><a href="events.html?cat=workshop">Workshops</a></li>
+          <li><a href="events.html?cat=hackathon">Hackathons</a></li>
+          <li><a href="events.html?cat=career">Career events</a></li>
+          <li><a href="events.html?cat=sports">Sports</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-newsletter">
+        <p class="footer-heading">Stay in the loop</p>
+        <p>Weekly digest of the best events on campus. No spam.</p>
+        <form class="search-bar" role="form" aria-label="Newsletter signup" onsubmit="event.preventDefault();alert('Subscribed!');">
+          <label class="visually-hidden" for="newsletter-email">Email address</label>
+          <input id="newsletter-email" class="input" type="email" placeholder="you@university.edu" autocomplete="email">
+          <button class="btn btn-accent" type="submit">Join</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom container">
+      <p>© 2026 Campus Event &amp; Activity Hub. A student project.</p>
+      <nav aria-label="Legal">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script type="module" src="../js/events-page.js"></script>
+  <noscript>
+    <p class="text-center" style="padding:1rem;">JavaScript is required to browse campus events.</p>
+  </noscript>
+</body>
+</html>

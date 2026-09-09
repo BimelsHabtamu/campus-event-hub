@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Campus Event & Activity Hub — your personal event dashboard.">
+  <title>Dashboard · Campus Event &amp; Activity Hub</title>
+  <link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout-dashboard.css">
+</head>
+<body class="app-shell" id="app-shell">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- ==================== Sidebar ==================== -->
+  <aside class="sidebar" id="sidebar" aria-label="Sidebar">
+    <div class="sidebar-brand">
+      <a class="brand" href="index.html" title="Back to public site">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2.6l2.3 5.4 5.9.6-4.4 4 1.3 5.7L12 15.5l-5.2 2.8 1.4-5.7-4.4-4 5.9-.6z"/></svg>
+        </span>
+        <span class="brand-name">Campus<em>Hub</em></span>
+      </a>
+      <button class="icon-btn sidebar-close" id="sidebar-close" type="button" aria-label="Close sidebar">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Dashboard">
+      <div class="nav-section">
+        <span class="nav-section-title">Main</span>
+        <a class="nav-item" href="#/dashboard" data-route data-page="dashboard">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          <span class="nav-label">Dashboard</span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-section-title">Planner</span>
+        <a class="nav-item" href="#/my-events" data-route data-page="my-events">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2a2 2 0 000-4z"/><path d="M14 6v12h-1.5"/></svg>
+          <span class="nav-label">My Events</span>
+        </a>
+        <a class="nav-item" href="#/saved" data-route data-page="saved">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5h12V20l-6-4-6 4z"/><path d="M9 9h6"/></svg>
+          <span class="nav-label">Saved Events</span>
+        </a>
+        <a class="nav-item" href="#/calendar" data-route data-page="calendar">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18M9 15h.01M13 15h.01M17 15h.01M9 18h.01"/></svg>
+          <span class="nav-label">Calendar</span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-section-title">Account</span>
+        <a class="nav-item" href="#/profile" data-route data-page="profile">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.5 4.2-5 8-5s6.5 1.5 8 5"/></svg>
+          <span class="nav-label">Profile</span>
+        </a>
+        <a class="nav-item" href="#/settings" data-route data-page="settings">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+          <span class="nav-label">Settings</span>
+        </a>
+      </div>
+
+      <a class="nav-item nav-item-danger" id="logout-link" href="index.html">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        <span class="nav-label">Logout</span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebar-overlay" hidden="hidden"></div>
+
+  <!-- ==================== Main column ==================== -->
+  <div class="app-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="icon-btn sidebar-toggle" id="sidebar-toggle" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle sidebar">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <h1 class="page-title" id="page-title">Dashboard</h1>
+      </div>
+
+      <div class="topbar-right">
+        <div class="topbar-search">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <label class="visually-hidden" for="topbar-search-input">Search events</label>
+          <input id="topbar-search-input" class="input" type="search" placeholder="Search events…" autocomplete="off" disabled>
+        </div>
+        <button class="icon-btn notification-bell" type="button" aria-label="Notifications">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 00-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M10 20a2 2 0 004 0"/></svg>
+          <span class="notification-dot"></span>
+        </button>
+        <a class="user-chip" href="#/profile" aria-label="Your profile">
+          <span class="avatar" aria-hidden="true">AR</span>
+          <span class="user-chip-meta">
+            <span class="user-chip-name">Alex Rivera</span>
+            <span class="user-chip-role">Computer Science '27</span>
+          </span>
+        </a>
+      </div>
+    </header>
+
+    <main id="main-content" class="app-content">
+
+      <!-- ========== Dashboard ========== -->
+      <section id="view-dashboard" class="view" data-view="dashboard">
+        <header class="page-header">
+          <h1>Dashboard</h1>
+          <p>A snapshot of your semester — stats and upcoming events arrive with Stage 3.</p>
+        </header>
+
+        <div class="stat-grid" aria-label="Placeholder statistics">
+          <article class="card stat-card">
+            <span class="stat-card-icon">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 8a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2a2 2 0 000-4z"/>
+              </svg>
+            </span>
+            <div>
+              <p class="stat-card-value">&mdash;</p>
+              <p class="stat-card-label">Registered events</p>
+            </div>
+          </article>
+          <article class="card stat-card">
+            <span class="stat-card-icon violet">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 4.5h12V20l-6-4-6 4z"/>
+              </svg>
+            </span>
+            <div>
+              <p class="stat-card-value">&mdash;</p>
+              <p class="stat-card-label">Saved events</p>
+            </div>
+          </article>
+          <article class="card stat-card">
+            <span class="stat-card-icon success">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M12 7v5l3 2"/>
+              </svg>
+            </span>
+            <div>
+              <p class="stat-card-value">&mdash;</p>
+              <p class="stat-card-label">Upcoming this month</p>
+            </div>
+          </article>
+          <article class="card stat-card">
+            <span class="stat-card-icon warning">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 20s-7-4.6-9.3-9A5.2 5.2 0 0112 6.8 5.2 5.2 0 0121.3 11C19 15.4 12 20 12 20z"/>
+              </svg>
+            </span>
+            <div>
+              <p class="stat-card-value">&mdash;</p>
+              <p class="stat-card-label">Events attended</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="stacked-sections">
+          <div class="card">
+            <header class="card-header">
+              <h2 class="card-title">Upcoming this week</h2>
+              <span class="badge badge-warning">Coming soon</span>
+            </header>
+            <div class="card-body soon-panel">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M12 8v5M12 16h.01"/>
+              </svg>
+              <p>Your registered events will show up here as deadlines and reminders.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== My Events ========== -->
+      <section id="view-my-events" class="view" data-view="my-events" hidden>
+        <header class="page-header">
+          <h1>My Events</h1>
+          <p>Everything you have registered for — live in Stage 3.</p>
+        </header>
+        <div class="card">
+          <div class="card-body soon-panel">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 8a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2a2 2 0 000-4z"/>
+            </svg>
+            <p>Your registered events will appear here.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== Saved Events ========== -->
+      <section id="view-saved" class="view" data-view="saved" hidden>
+        <header class="page-header">
+          <h1>Saved Events</h1>
+          <p>Bookmark events while you browse and revisit them here.</p>
+        </header>
+        <div class="card">
+          <div class="card-body soon-panel">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 4.5h12V20l-6-4-6 4z"/>
+            </svg>
+            <p>Nothing saved yet. When you discover an event you like, hit <strong>Save</strong>.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== Calendar ========== -->
+      <section id="view-calendar" class="view" data-view="calendar" hidden>
+        <header class="page-header">
+          <h1>Calendar</h1>
+          <p>Sample view — the interactive month calendar lands with Stage 3.</p>
+        </header>
+        <div class="card calendar-card">
+          <div class="calendar-months">
+            <h2>September 2026</h2>
+            <div class="calendar-actions">
+              <button class="icon-btn" type="button" disabled aria-label="Previous month">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+              </button>
+              <button class="icon-btn" type="button" disabled aria-label="Next month">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="calendar-grid" role="grid" aria-label="September 2026">
+            <span class="calendar-weekday" role="columnheader">Sun</span>
+            <span class="calendar-weekday" role="columnheader">Mon</span>
+            <span class="calendar-weekday" role="columnheader">Tue</span>
+            <span class="calendar-weekday" role="columnheader">Wed</span>
+            <span class="calendar-weekday" role="columnheader">Thu</span>
+            <span class="calendar-weekday" role="columnheader">Fri</span>
+            <span class="calendar-weekday" role="columnheader">Sat</span>
+            <span class="calendar-cell is-muted">30</span>
+            <span class="calendar-cell is-muted">31</span>
+            <span class="calendar-cell">1</span>
+            <span class="calendar-cell">2</span>
+            <span class="calendar-cell">3</span>
+            <span class="calendar-cell">4</span>
+            <span class="calendar-cell">5</span>
+            <span class="calendar-cell">6</span>
+            <span class="calendar-cell">7</span>
+            <span class="calendar-cell has-event">8</span>
+            <span class="calendar-cell is-today">9</span>
+            <span class="calendar-cell has-event">10</span>
+            <span class="calendar-cell">11</span>
+            <span class="calendar-cell">12</span>
+            <span class="calendar-cell">13</span>
+            <span class="calendar-cell">14</span>
+            <span class="calendar-cell">15</span>
+            <span class="calendar-cell">16</span>
+            <span class="calendar-cell has-event">17</span>
+            <span class="calendar-cell">18</span>
+            <span class="calendar-cell">19</span>
+            <span class="calendar-cell">20</span>
+            <span class="calendar-cell">21</span>
+            <span class="calendar-cell">22</span>
+            <span class="calendar-cell">23</span>
+            <span class="calendar-cell has-event">24</span>
+            <span class="calendar-cell">25</span>
+            <span class="calendar-cell">26</span>
+            <span class="calendar-cell has-event">27</span>
+            <span class="calendar-cell">28</span>
+            <span class="calendar-cell">29</span>
+            <span class="calendar-cell">30</span>
+            <span class="calendar-cell is-muted">1</span>
+            <span class="calendar-cell is-muted">2</span>
+            <span class="calendar-cell is-muted">3</span>
+          </div>
+
+          <div class="calendar-legend">
+            <span><span class="legend-dot" style="background:var(--color-primary);"></span>Today</span>
+            <span><span class="legend-dot" style="background:var(--brand-200);"></span>Event day</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== Profile ========== -->
+      <section id="view-profile" class="view" data-view="profile" hidden>
+        <header class="page-header">
+          <h1>Profile</h1>
+          <p>Your account details — editing arrives in a later stage.</p>
+        </header>
+
+        <div class="profile-grid">
+          <div class="card profile-side">
+            <span class="avatar avatar-lg" aria-hidden="true">AR</span>
+            <div>
+              <p class="text-bold">Alex Rivera</p>
+              <p class="text-sm">Computer Science · Year 3</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" type="button" disabled>Upload photo</button>
+          </div>
+
+          <div class="card">
+            <div class="card-body">
+              <div class="form-row cols-2">
+                <div class="form-field">
+                  <label class="form-label" for="profile-first">First name</label>
+                  <input id="profile-first" class="input" type="text" value="Alex" disabled>
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="profile-last">Last name</label>
+                  <input id="profile-last" class="input" type="text" value="Rivera" disabled>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="profile-email">University email</label>
+                <input id="profile-email" class="input" type="email" value="alex.rivera@university.edu" disabled>
+              </div>
+              <div class="form-row cols-2">
+                <div class="form-field">
+                  <label class="form-label" for="profile-major">Major</label>
+                  <input id="profile-major" class="input" type="text" value="Computer Science" disabled>
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="profile-year">Year</label>
+                  <input id="profile-year" class="input" type="text" value="3rd year" disabled>
+                </div>
+              </div>
+              <div class="form-actions" style="margin-top:0.5rem;">
+                <button class="btn btn-primary" type="button" disabled>Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== Settings ========== -->
+      <section id="view-settings" class="view" data-view="settings" hidden>
+        <header class="page-header">
+          <h1>Settings</h1>
+          <p>Notification preferences and account actions.</p>
+        </header>
+
+        <div class="card">
+          <header class="card-header">
+            <h2 class="card-title">Notifications</h2>
+            <span class="badge badge-warning">Coming soon</span>
+          </header>
+          <div class="card-body settings-list">
+            <div class="settings-row">
+              <div>
+                <p class="settings-row-title">Email reminders</p>
+                <p class="settings-row-desc">Get an email 24h before an event starts.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" disabled checked>
+                <span class="switch-track" aria-hidden="true"></span>
+                <span class="visually-hidden">Enable email reminders</span>
+              </label>
+            </div>
+            <div class="settings-row">
+              <div>
+                <p class="settings-row-title">In-app alerts</p>
+                <p class="settings-row-desc">Notifications for saved and registered events.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" disabled checked>
+                <span class="switch-track" aria-hidden="true"></span>
+                <span class="visually-hidden">Enable in-app alerts</span>
+              </label>
+            </div>
+            <div class="settings-row">
+              <div>
+                <p class="settings-row-title">Weekly digest</p>
+                <p class="settings-row-desc">A Monday round-up of the best events on campus.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" disabled>
+                <span class="switch-track" aria-hidden="true"></span>
+                <span class="visually-hidden">Enable weekly digest</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="stacked-sections">
+          <div class="card danger-zone">
+            <div class="card-header">
+              <h2 class="card-title">Danger zone</h2>
+            </div>
+            <div class="card-body">
+              <h3>Delete account</h3>
+              <p class="text-sm text-muted">Permanently remove your account and all saved data. This action cannot be undone.</p>
+              <p class="text-xs text-subtle" style="margin-top:0.25rem;">Disabled until account management is implemented.</p>
+              <div style="margin-top:0.75rem;">
+                <button class="btn btn-danger" type="button" disabled>Delete account</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script type="module" src="../js/dashboard.js"></script>
+  <noscript>
+    <p class="text-center" style="padding:1rem;">JavaScript is required to use the Campus Event &amp; Activity Hub.</p>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#eef2f7"/>
+  <circle cx="320" cy="160" r="76" fill="#dbeafe"/>
+  <path d="M320 118l18 36 40 6-29 28 7 40-36-19-36 19 7-40-29-28 40-6z" fill="#2563eb"/>
+  <text x="320" y="300" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#64748b" text-anchor="middle">Campus Event</text>
+</svg>
