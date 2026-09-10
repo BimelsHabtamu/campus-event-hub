@@ -16,6 +16,7 @@ import {
   logout,
   changePassword,
 } from "./auth.js";
+import { initPasswordToggles } from "./password-toggle.js";
 
 const NOTIF_PREFS_KEY = "ceh:notif-prefs";
 
@@ -336,6 +337,7 @@ function init() {
   }
 
   const user = getCurrentUser();
+  initPasswordToggles();
   populateIdentity(user);
   initNotifPreferences();
   initPasswordForm();

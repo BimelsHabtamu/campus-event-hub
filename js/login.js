@@ -6,6 +6,7 @@ import {
   normalizeEmail,
   seedAdminAccount,
 } from "./auth.js";
+import { initPasswordToggles } from "./password-toggle.js";
 
 function showMessage(type, message) {
   const element = document.getElementById("login-message");
@@ -54,6 +55,7 @@ function setBusy(busy) {
 }
 
 async function init() {
+  initPasswordToggles();
   /*
    * Seed the default admin account only when needed.
    * Errors here must not prevent the login form from loading.

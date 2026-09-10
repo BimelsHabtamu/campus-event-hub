@@ -91,15 +91,21 @@
 
             <div class="form-field">
               <label class="form-label" for="reg-password">Password</label>
-              <input id="reg-password" class="input" type="password" name="password"
-                placeholder="8+ chars, a letter &amp; a number" autocomplete="new-password" minlength="8" required>
+              <div class="password-input-wrap">
+                <input id="reg-password" class="input" type="password" name="password"
+                  placeholder="8+ chars, a letter &amp; a number" autocomplete="new-password" minlength="8" required>
+                <button class="password-toggle" type="button" data-password-toggle="reg-password" aria-label="Show password" aria-pressed="false"></button>
+              </div>
               <span id="reg-password-error" class="field-error" role="alert" hidden></span>
             </div>
 
             <div class="form-field">
               <label class="form-label" for="reg-confirm">Confirm password</label>
-              <input id="reg-confirm" class="input" type="password" name="confirm" placeholder="Repeat password"
-                autocomplete="new-password" minlength="8" required>
+              <div class="password-input-wrap">
+                <input id="reg-confirm" class="input" type="password" name="confirm" placeholder="Repeat password"
+                  autocomplete="new-password" minlength="8" required>
+                <button class="password-toggle" type="button" data-password-toggle="reg-confirm" aria-label="Show password" aria-pressed="false"></button>
+              </div>
               <span id="reg-confirm-error" class="field-error" role="alert" hidden></span>
             </div>
 

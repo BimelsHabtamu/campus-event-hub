@@ -5,6 +5,7 @@ import {
   validateRegistration,
   normalizeEmail,
 } from "./auth.js";
+import { initPasswordToggles } from "./password-toggle.js";
 
 const Icons = {
   error: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>',
@@ -54,6 +55,7 @@ function setBusy(busy, text) {
 }
 
 function init() {
+  initPasswordToggles();
   // Already signed in? Route to appropriate dashboard.
   if (isLoggedIn()) {
     const user = getCurrentUser();

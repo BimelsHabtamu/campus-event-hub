@@ -196,19 +196,28 @@
             <form id="password-form" novalidate style="max-width:32rem;">
               <div class="form-field">
                 <label class="form-label" for="pw-current">Current Password <span class="text-danger">*</span></label>
-                <input id="pw-current" class="input" type="password" required autocomplete="current-password">
+                <div class="password-input-wrap">
+                  <input id="pw-current" class="input" type="password" required autocomplete="current-password">
+                  <button class="password-toggle" type="button" data-password-toggle="pw-current" aria-label="Show password" aria-pressed="false"></button>
+                </div>
                 <span id="pw-current-error" class="field-error" role="alert" hidden></span>
               </div>
 
               <div class="form-row cols-2">
                 <div class="form-field">
                   <label class="form-label" for="pw-new">New Password <span class="text-danger">*</span></label>
-                  <input id="pw-new" class="input" type="password" required autocomplete="new-password" minlength="8">
+                  <div class="password-input-wrap">
+                    <input id="pw-new" class="input" type="password" required autocomplete="new-password" minlength="8">
+                    <button class="password-toggle" type="button" data-password-toggle="pw-new" aria-label="Show password" aria-pressed="false"></button>
+                  </div>
                   <span id="pw-new-error" class="field-error" role="alert" hidden></span>
                 </div>
                 <div class="form-field">
                   <label class="form-label" for="pw-confirm">Confirm New Password <span class="text-danger">*</span></label>
-                  <input id="pw-confirm" class="input" type="password" required autocomplete="new-password" minlength="8">
+                  <div class="password-input-wrap">
+                    <input id="pw-confirm" class="input" type="password" required autocomplete="new-password" minlength="8">
+                    <button class="password-toggle" type="button" data-password-toggle="pw-confirm" aria-label="Show password" aria-pressed="false"></button>
+                  </div>
                   <span id="pw-confirm-error" class="field-error" role="alert" hidden></span>
                 </div>
               </div>
