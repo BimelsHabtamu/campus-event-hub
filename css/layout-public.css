@@ -38,20 +38,10 @@
   color: var(--color-primary-text);
 }
 
-.brand-mark {
-  display: inline-grid;
-  place-items: center;
+.brand-img {
   width: 2.25rem;
   height: 2.25rem;
-  border-radius: var(--radius-md);
-  background: var(--gradient-brand);
-  color: var(--color-inverse);
-  box-shadow: var(--shadow-sm);
-}
-
-.brand-mark .icon {
-  width: 1.25rem;
-  height: 1.25rem;
+  object-fit: contain;
 }
 
 .brand-name em {
@@ -178,8 +168,8 @@
   z-index: -1;
   background:
     radial-gradient(40rem 22rem at 12% 0%, var(--brand-100) 0%, transparent 60%),
-    radial-gradient(34rem 20rem at 90% 15%, var(--violet-50) 0%, transparent 55%),
-    linear-gradient(180deg, #fbfdff 0%, var(--color-bg) 100%);
+    radial-gradient(34rem 20rem at 90% 15%, var(--brand-50) 0%, transparent 55%),
+    linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
 }
 
 .hero-bg::after {
@@ -551,7 +541,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: var(--spacing-md);
   padding-block: var(--spacing-lg);
   border-top: var(--border-width) solid var(--gray-800);
@@ -561,7 +551,7 @@
 
 @media (min-width: 48rem) {
   .footer-bottom {
-    flex-direction: row;
+    flex-direction: column;
   }
 }
 
@@ -730,13 +720,13 @@
 }
 
 /* Category accent palettes (reuses the design-system scales) */
-.category-card[data-cat="workshop"]   { --cat-color: var(--brand-600);  --cat-bg: var(--brand-100); }
-.category-card[data-cat="hackathon"]  { --cat-color: var(--violet-600); --cat-bg: var(--violet-50); }
+.category-card[data-cat="workshop"]   { --cat-color: var(--brand-700); --cat-bg: var(--brand-100); }
+.category-card[data-cat="hackathon"]  { --cat-color: var(--brand-800); --cat-bg: var(--brand-100); }
 .category-card[data-cat="career"]     { --cat-color: var(--success-600); --cat-bg: var(--success-50); }
 .category-card[data-cat="seminar"]    { --cat-color: var(--warning-600); --cat-bg: var(--warning-50); }
-.category-card[data-cat="sports"]     { --cat-color: var(--cyan-500);   --cat-bg: var(--brand-50); }
+.category-card[data-cat="sports"]     { --cat-color: var(--brand-500);  --cat-bg: var(--brand-50); }
 .category-card[data-cat="competition"]{ --cat-color: var(--danger-600); --cat-bg: var(--danger-50); }
-.category-card[data-cat="cultural"]   { --cat-color: var(--violet-700); --cat-bg: var(--violet-50); }
+.category-card[data-cat="cultural"]   { --cat-color: var(--brand-900); --cat-bg: var(--brand-100); }
 
 /* ---------- CTA band ---------- */
 .cta-band {

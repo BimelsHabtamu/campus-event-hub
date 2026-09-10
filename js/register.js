@@ -1,14 +1,6 @@
-/* ============================================================
-   register.js — registration page controller (html/register.html)
-   ------------------------------------------------------------
-   - Bounces already-signed-in users to the dashboard
-   - Inline validation per field (incl. terms checkbox)
-   - Duplicate-email error from auth.js shown on the field
-   - Success banner + redirect to login.html?registered=1
-   ============================================================ */
-
 import {
   isLoggedIn,
+  getCurrentUser,
   createUserAccount,
   validateRegistration,
   normalizeEmail,
@@ -62,9 +54,14 @@ function setBusy(busy, text) {
 }
 
 function init() {
-  // Already signed in? Nothing to register for.
+  // Already signed in? Route to appropriate dashboard.
   if (isLoggedIn()) {
-    window.location.replace("app.html");
+    const user = getCurrentUser();
+    if (user && user.role === "admin") {
+      window.location.replace("admin-dashboard.html");
+    } else {
+      window.location.replace("app.html");
+    }
     return;
   }
 

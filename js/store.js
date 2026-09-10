@@ -1,20 +1,4 @@
-/* ============================================================
-   store.js — LocalStorage persistence layer
-   ------------------------------------------------------------
-   Everything persisted on the client lives behind this module so
-   the storage keys, JSON serialization, and error handling are
-   defined in exactly one place. Keys are namespaced with "ceh:".
-
-   Data we persist:
-     - ceh:saved         -> array of event ids (saved/bookmarked)
-     - ceh:registrations -> array of { eventId, registeredAt }
-     - ceh:prefs         -> object of user preferences
-     - ceh:users         -> array of registered accounts (hash + salt)
-     - ceh:current-user  -> session profile of the signed-in user
-   ============================================================ */
-
 const PREFIX = "ceh:";
-
 const KEYS = {
   saved: `${PREFIX}saved`,
   registrations: `${PREFIX}registrations`,
@@ -128,10 +112,135 @@ export function isEventSaved(eventId) {
 }
 
 /**
- * Redirect the navigation targets below to KEYS when Stage 1
- * implements registration and preferences.
- * @returns {Record<"registrations" | "prefs", string>}
+ * Get all registrations from LocalStorage.
+ * @returns {Array<object>}
  */
+export function getRegistrations() {
+  const value = read(KEYS.registrations, []);
+  return Array.isArray(value) ? value : [];
+}
+
+/**
+ * Get all registrations for a specific event.
+ * @param {string} eventId
+ * @returns {Array<object>}
+ */
+export function getEventRegistrations(eventId) {
+  return getRegistrations().filter((r) => r.eventId === eventId);
+}
+
+/**
+ * Find a user's registration for an event.
+ * @param {string} eventId
+ * @param {string} userEmail
+ * @returns {object | undefined}
+ */
+export function getUserRegistration(eventId, userEmail) {
+  if (!userEmail) return undefined;
+  const cleanEmail = String(userEmail).trim().toLowerCase();
+  return getRegistrations().find(
+    (r) => r.eventId === eventId && r.userEmail && r.userEmail.trim().toLowerCase() === cleanEmail,
+  );
+}
+
+/**
+ * Get every registration belonging to a user (email is normalized).
+ * @param {string} userEmail
+ * @returns {Array<object>}
+ */
+export function getUserRegistrations(userEmail) {
+  if (!userEmail) return [];
+  const cleanEmail = String(userEmail).trim().toLowerCase();
+  return getRegistrations().filter(
+    (r) => r.userEmail && r.userEmail.trim().toLowerCase() === cleanEmail,
+  );
+}
+
+/**
+ * True when the user is registered for the event.
+ * @param {string} eventId
+ * @param {string} userEmail
+ * @returns {boolean}
+ */
+export function isUserRegistered(eventId, userEmail) {
+  return !!getUserRegistration(eventId, userEmail);
+}
+
+/**
+ * Register a user for an event.
+ * @param {{ eventId: string, userId?: string, userEmail: string, userName: string, studentId?: string, notes?: string }} data
+ * @returns {{ ok: true, registration: object } | { ok: false, error: string }}
+ */
+export function registerForEvent(data) {
+  const { eventId, userId = "", userEmail, userName, studentId = "", notes = "" } = data;
+  if (!eventId || !userEmail) {
+    return { ok: false, error: "Missing event or user email." };
+  }
+
+  const cleanEmail = userEmail.trim().toLowerCase();
+  if (isUserRegistered(eventId, cleanEmail)) {
+    return { ok: false, error: "You are already registered for this event." };
+  }
+
+  const registrations = getRegistrations();
+  const newRecord = {
+    id: `reg_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    eventId,
+    userId,
+    userEmail: cleanEmail,
+    userName: (userName || "").trim(),
+    studentId: (studentId || "").trim(),
+    notes: (notes || "").trim(),
+    registeredAt: new Date().toISOString(),
+  };
+
+  registrations.push(newRecord);
+  write(KEYS.registrations, registrations);
+  return { ok: true, registration: newRecord };
+}
+
+/**
+ * Cancel a user's event registration.
+ * @param {string} eventId
+ * @param {string} userEmail
+ * @returns {{ ok: boolean, error?: string }}
+ */
+export function cancelEventRegistration(eventId, userEmail) {
+  if (!eventId || !userEmail) {
+    return { ok: false, error: "Missing event or user email." };
+  }
+  const cleanEmail = userEmail.trim().toLowerCase();
+  const registrations = getRegistrations();
+  const initialLength = registrations.length;
+  const updated = registrations.filter(
+    (r) => !(r.eventId === eventId && r.userEmail && r.userEmail.trim().toLowerCase() === cleanEmail),
+  );
+
+  if (updated.length === initialLength) {
+    return { ok: false, error: "Registration not found." };
+  }
+
+  write(KEYS.registrations, updated);
+  return { ok: true };
+}
+
+/**
+ * Calculate capacity statistics for an event.
+ * @param {{ id: string, capacity: number }} event
+ * @returns {{ total: number, booked: number, available: number, isFull: boolean }}
+ */
+export function getEventCapacityStats(event) {
+  const total = Number(event.capacity) || 0;
+  const booked = getEventRegistrations(event.id).length;
+  const available = Math.max(0, total - booked);
+  return {
+    total,
+    booked,
+    available,
+    isFull: available === 0,
+  };
+}
+
 export function getStorageKeys() {
   return {
     registrations: KEYS.registrations,

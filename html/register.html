@@ -1,143 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <meta name="description" content="Create an account on Campus Event & Activity Hub.">
-  <title>Create account · Campus Event &amp; Activity Hub</title>
-  <link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+
+  <title>Create account · CampusHub</title>
+
+  <link rel="icon" href="../images/logo/logo.png" type="image/png">
+
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/components.css">
   <link rel="stylesheet" href="../css/auth.css">
 </head>
+
 <body class="auth-page">
-  <main class="auth-layout" aria-label="Create an account">
 
-    <!-- Form column -->
-    <div class="auth-panel">
-      <a class="auth-back" href="index.html">
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-        Back to home
-      </a>
+  <a class="auth-back auth-back--top" href="index.html">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M15 18l-6-6 6-6"></path>
+    </svg>
 
-      <header class="auth-heading">
-        <a class="brand" href="index.html" aria-label="Campus Hub home">
-          <span class="brand-mark">
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2.6l2.3 5.4 5.9.6-4.4 4 1.3 5.7L12 15.5l-5.2 2.8 1.4-5.7-4.4-4 5.9-.6z"/></svg>
+    <span>Back to home</span>
+  </a>
+
+  <main class="auth-layout auth-layout--single" aria-label="Create an account">
+
+    <section class="auth-panel">
+
+      <div class="auth-panel-inner">
+
+        <!-- Brand -->
+        <a class="auth-brand auth-brand--stack" href="index.html" aria-label="CampusHub home">
+          <img class="auth-brand-img" src="../images/logo/logo.png" alt="CampusHub logo" width="64" height="64">
+
+          <span class="auth-brand-name">
+            Campus<em>Hub</em>
+            
           </span>
-          <span class="brand-name">Campus<em>Hub</em></span>
         </a>
-        <h1>Create your account</h1>
-        <p>Use your university email to get started in under a minute.</p>
-      </header>
 
-      <form id="register-form" class="auth-form" action="#" method="post" novalidate aria-label="Registration form">
-        <div id="reg-message" class="form-message" hidden></div>
 
-        <div class="form-row cols-2">
-          <div class="form-field">
-            <label class="form-label" for="reg-first">First name</label>
-            <input id="reg-first" class="input" type="text" name="firstName" placeholder="Alex" autocomplete="given-name" required>
-            <span id="reg-first-error" class="field-error" hidden></span>
+        <!-- Heading -->
+        <header class="auth-heading auth-heading--center">
+          <h1>Create your account</h1>
+        </header>
+
+
+        <!-- Registration Form -->
+        <form id="register-form" class="auth-form" action="#" method="post" novalidate aria-label="Registration form">
+
+          <!-- Global form message -->
+          <div id="reg-message" class="form-message" role="alert" hidden></div>
+
+
+          <!-- Name -->
+          <div class="form-row cols-2">
+
+            <div class="form-field">
+              <label class="form-label" for="reg-first">First name</label>
+              <input id="reg-first" class="input" type="text" name="firstName" placeholder="Bimels"
+                autocomplete="given-name" required>
+              <span id="reg-first-error" class="field-error" role="alert" hidden></span>
+            </div>
+
+            <div class="form-field">
+              <label class="form-label" for="reg-last">Last name</label>
+              <input id="reg-last" class="input" type="text" name="lastName" placeholder="Habtamu"
+                autocomplete="family-name" required>
+              <span id="reg-last-error" class="field-error" role="alert" hidden></span>
+            </div>
+
           </div>
+
+
+          <!-- Email -->
           <div class="form-field">
-            <label class="form-label" for="reg-last">Last name</label>
-            <input id="reg-last" class="input" type="text" name="lastName" placeholder="Rivera" autocomplete="family-name" required>
-            <span id="reg-last-error" class="field-error" hidden></span>
+            <label class="form-label" for="reg-email">email</label>
+            <input id="reg-email" class="input" type="email" name="email" placeholder="bimels@gmail.com"
+              autocomplete="email" required>
+            <span id="reg-email-error" class="field-error" role="alert" hidden></span>
           </div>
+
+
+          <!-- Password -->
+          <div class="form-row cols-2">
+
+            <div class="form-field">
+              <label class="form-label" for="reg-password">Password</label>
+              <input id="reg-password" class="input" type="password" name="password"
+                placeholder="8+ chars, a letter &amp; a number" autocomplete="new-password" minlength="8" required>
+              <span id="reg-password-error" class="field-error" role="alert" hidden></span>
+            </div>
+
+            <div class="form-field">
+              <label class="form-label" for="reg-confirm">Confirm password</label>
+              <input id="reg-confirm" class="input" type="password" name="confirm" placeholder="Repeat password"
+                autocomplete="new-password" minlength="8" required>
+              <span id="reg-confirm-error" class="field-error" role="alert" hidden></span>
+            </div>
+
+          </div>
+
+
+          <!-- Terms -->
+          <label class="form-check" for="reg-terms">
+            <input id="reg-terms" type="checkbox" name="terms" required>
+            <span>
+              I agree to the
+              <a href="#" aria-disabled="true">Terms of Service</a> and
+              <a href="#" aria-disabled="true">Privacy Policy</a>.
+            </span>
+          </label>
+          <span id="reg-terms-error" class="field-error" role="alert" hidden></span>
+
+
+          <!-- Submit -->
+          <button id="reg-submit" class="btn btn-primary btn-lg btn-block" type="submit">
+            Create account
+          </button>
+
+        </form>
+
+
+        <!-- Login -->
+        <div class="auth-switch">
+
+          <span>Already have an account?</span>
+
+          <a href="login.html">
+            Log in
+          </a>
+
         </div>
 
-        <div class="form-field">
-          <label class="form-label" for="reg-email">University email</label>
-          <input id="reg-email" class="input" type="email" name="email" placeholder="you@university.edu" autocomplete="email" required>
-          <span id="reg-email-error" class="field-error" hidden></span>
-        </div>
-
-        <div class="form-row cols-2">
-          <div class="form-field">
-            <label class="form-label" for="reg-password">Password</label>
-            <input id="reg-password" class="input" type="password" name="password" placeholder="8+ chars, a letter &amp; a number" autocomplete="new-password" minlength="8" required>
-            <span id="reg-password-error" class="field-error" hidden></span>
-          </div>
-          <div class="form-field">
-            <label class="form-label" for="reg-confirm">Confirm password</label>
-            <input id="reg-confirm" class="input" type="password" name="confirm" placeholder="Repeat password" autocomplete="new-password" minlength="8" required>
-            <span id="reg-confirm-error" class="field-error" hidden></span>
-          </div>
-        </div>
-
-        <label class="form-check" for="reg-terms">
-          <input id="reg-terms" type="checkbox" name="terms" required>
-          <span>
-            I agree to the
-            <a href="#" aria-disabled="true">Terms of Service</a> and
-            <a href="#" aria-disabled="true">Privacy Policy</a>.
-          </span>
-        </label>
-        <span id="reg-terms-error" class="field-error" style="margin-top:0.5rem;" hidden></span>
-
-        <button id="reg-submit" class="btn btn-primary btn-lg btn-block" type="submit">Create account</button>
-
-        <p class="auth-terms">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
-          Accounts are stored locally in your browser — nothing is sent to a server.
-        </p>
-      </form>
-
-      <div class="divider">or sign up with</div>
-
-      <div class="social-grid">
-        <button class="btn btn-social" type="button">
-          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.6 12.3c0-.8-.1-1.5-.2-2.2H12v4.3h5.9a4.9 4.9 0 01-2.1 3.2v2.7h3.4c2-1.9 3.4-4.6 3.4-8z"/><path fill="#34A853" d="M12 23c2.9 0 5.3-1 7.1-2.6l-3.4-2.7c-1 .6-2.2 1-3.7 1-2.8 0-5.2-1.9-6.1-4.5H2.4v2.7A11 11 0 0012 23z"/><path fill="#FBBC05" d="M5.9 14.2A6.6 6.6 0 015.5 12c0-.8.2-1.5.4-2.2V7.1H2.4a11 11 0 000 9.8z"/><path fill="#EA4335" d="M12 5.4a6 6 0 014.2 1.7l3.1-3.1A11 11 0 002.4 7.1l3.5 2.7C6.8 7.3 9.2 5.4 12 5.4z"/></svg>
-          Continue with Google
-        </button>
-        <button class="btn btn-social" type="button">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-3.2 19.5c.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.2-3.4-1.2-.5-1.1-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.4 1.1 3 .8.1-.7.4-1.1.6-1.4-2.2-.2-4.6-1.1-4.6-4.8a3.8 3.8 0 011-2.6 3.5 3.5 0 01.1-2.6s.8-.3 2.7 1a9.4 9.4 0 015 0c1.9-1.3 2.7-1 2.7-1a3.5 3.5 0 01.1 2.6 3.8 3.8 0 011 2.6c0 3.7-2.4 4.6-4.6 4.8.4.3.7.9.7 1.8v2.6c0 .3.2.6.7.5A10 10 0 0012 2z"/></svg>
-          Continue with GitHub
-        </button>
       </div>
 
-      <p class="auth-switch">Already have an account? <a href="login.html">Log in</a></p>
-    </div>
+    </section>
 
-    <!-- Decorative column -->
-    <aside class="auth-visual" aria-hidden="true">
-      <div>
-        <a class="brand" href="index.html">
-          <span class="brand-mark">
-            <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 2.6l2.3 5.4 5.9.6-4.4 4 1.3 5.7L12 15.5l-5.2 2.8 1.4-5.7-4.4-4 5.9-.6z"/></svg>
-          </span>
-          <span class="brand-name">Campus<em>Hub</em></span>
-        </a>
-        <p class="auth-visual-badge">Join 8,000+ students</p>
-        <h2>Make this your most eventful term yet.</h2>
-        <ul class="auth-visual-list">
-          <li>
-            <svg class="icon" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-            One feed for every club, society &amp; faculty
-          </li>
-          <li>
-            <svg class="icon" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-            Personalized calendar &amp; reminders
-          </li>
-          <li>
-            <svg class="icon" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-            One-click event registration
-          </li>
-        </ul>
-      </div>
-      <blockquote class="auth-visual-note">
-        <span class="avatar">KO</span>
-        <p>
-          “Signed up in 30 seconds. Found the designathon and a taster soccer session
-          for the same week.”
-        </p>
-        <p class="text-xs" style="color:rgba(255,255,255,0.6);margin-top:0.25rem;">Kaia O. — 1st year, Engineering</p>
-      </blockquote>
-    </aside>
   </main>
 
   <script type="module" src="../js/register.js"></script>
+
 </body>
+
 </html>

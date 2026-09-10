@@ -29,7 +29,7 @@ export function pad(n) {
   return String(n).padStart(2, "0");
 }
 
-/** Human label like "3d 04h 12m 08s". TODO (Stage 1): render segments. */
+/** Human label like "3d 04h 12m 08s". */
 export function formatCountdown(parts) {
   const { days, hours, minutes, seconds, isPast } = parts;
   if (isPast) return "Started";
@@ -38,7 +38,6 @@ export function formatCountdown(parts) {
 
 /**
  * Register an element whose textContent is refreshed every interval.
- * TODO (Stage 1): implemented by the countdown UI component.
  * @param {HTMLElement} element
  * @param {string} isoString
  * @param {number} [intervalMs=1000]

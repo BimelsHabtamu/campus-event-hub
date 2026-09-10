@@ -1,58 +1,49 @@
-/* ============================================================
-   login.js — login page controller (html/login.html)
-   ------------------------------------------------------------
-   - Bounces already-signed-in users to the dashboard
-   - Inline validation per field
-   - Auth-level errors in a form banner
-   - Success banner when arriving from ?registered=1
-   - Redirects to app.html after a successful sign-in
-   ============================================================ */
-
 import {
   isLoggedIn,
+  getCurrentUser,
   login,
   validateLogin,
   normalizeEmail,
+  seedAdminAccount,
 } from "./auth.js";
 
-const Icons = {
-  error: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>',
-  success: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>',
-};
+function showMessage(type, message) {
+  const element = document.getElementById("login-message");
 
-function showMessage(kind, text) {
-  const box = document.getElementById("login-message");
-  if (!box) return;
-  box.className = `form-message form-message--${kind}`;
-  box.innerHTML = `${kind === "success" ? Icons.success : Icons.error}<span>${text}</span>`;
-  box.hidden = false;
-  box.setAttribute("aria-live", "assertive");
+  if (!element) return;
+
+  element.textContent = message;
+  element.className = `form-message ${type}`;
+  element.hidden = false;
 }
 
 function clearMessage() {
-  const box = document.getElementById("login-message");
-  if (box) box.hidden = true;
+  const element = document.getElementById("login-message");
+
+  if (!element) return;
+
+  element.textContent = "";
+  element.hidden = true;
 }
 
-function showFieldError(id, message) {
-  const input = document.getElementById(id);
-  const error = document.getElementById(`${id}-error`);
-  input?.classList.add("is-invalid");
+function setFieldError(name, message) {
+  const input = document.getElementById(`login-${name}`);
+  const error = document.getElementById(`login-${name}-error`);
+
+  if (input) {
+    input.classList.toggle("input-error", Boolean(message));
+    input.setAttribute("aria-invalid", message ? "true" : "false");
+  }
+
   if (error) {
-    error.innerHTML = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg><span>${message}</span>`;
-    error.hidden = false;
+    error.textContent = message || "";
+    error.hidden = !message;
   }
 }
 
-function clearFieldError(id) {
-  document.getElementById(id)?.classList.remove("is-invalid");
-  const error = document.getElementById(`${id}-error`);
-  if (error) error.hidden = true;
-}
-
-function clearAllErrors(fields) {
-  fields.forEach((field) => clearFieldError(field));
-  clearMessage();
+function clearFieldErrors() {
+  setFieldError("email", "");
+  setFieldError("password", "");
 }
 
 function setBusy(busy) {
@@ -62,64 +53,105 @@ function setBusy(busy) {
   button.textContent = busy ? "Signing in…" : "Sign in";
 }
 
-function init() {
-  // Already signed in? Go straight to the app.
+async function init() {
+  /*
+   * Seed the default admin account only when needed.
+   * Errors here must not prevent the login form from loading.
+   */
+  try {
+    await seedAdminAccount();
+  } catch (error) {
+    console.warn("Admin seed skipped:", error);
+  }
+
+  /*
+   * If a valid session already exists, send the user
+   * directly to the correct dashboard.
+   */
   if (isLoggedIn()) {
-    window.location.replace("app.html");
+    const user = getCurrentUser();
+
+    if (user && user.role === "admin") {
+      window.location.replace("admin-dashboard.html#/admin-dashboard");
+    } else if (user) {
+      window.location.replace("app.html");
+    }
+
     return;
   }
 
   const form = document.getElementById("login-form");
   if (!form) return;
 
-  const fields = ["email", "password"];
-  const inputs = {
-    email: document.getElementById("login-email"),
-    password: document.getElementById("login-password"),
-  };
-
-  // Show the "account created" success banner when redirected from register.
-  const params = new URLSearchParams(window.location.search);
-  if (params.get("registered")) {
-    showMessage("success", "Your account was created. Log in to get started.");
-    inputs.email.focus();
-  }
-
-  // Clear a field's error the moment the user starts fixing it.
-  fields.forEach((field) => {
-    inputs[field]?.addEventListener("input", () => clearFieldError(field));
-  });
+  const emailInput = form.elements.email;
+  const passwordInput = form.elements.password;
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    clearAllErrors(fields);
 
-    const { errors, valid } = validateLogin({
-      email: inputs.email.value,
-      password: inputs.password.value,
+    clearMessage();
+    clearFieldErrors();
+
+    const email = normalizeEmail(emailInput?.value || "");
+    const password = passwordInput?.value || "";
+
+    const validation = validateLogin({
+      email,
+      password,
     });
 
-    if (!valid) {
-      showMessage("error", "Please fix the highlighted fields and try again.");
-      fields.forEach((field) => {
-        if (errors[field]) showFieldError(`login-${field}`, errors[field]);
-      });
+    if (!validation.valid) {
+      setFieldError("email", validation.errors.email);
+      setFieldError("password", validation.errors.password);
+
+      if (validation.errors.email && emailInput) {
+        emailInput.focus();
+      } else if (validation.errors.password && passwordInput) {
+        passwordInput.focus();
+      }
+
       return;
     }
 
     setBusy(true);
-    const result = await login(normalizeEmail(inputs.email.value), inputs.password.value);
-    setBusy(false);
 
-    if (!result.ok) {
-      showMessage("error", result.error);
-      return;
+    try {
+      const result = await login(email, password);
+
+      if (!result.ok) {
+        showMessage("error", result.error);
+        setBusy(false);
+
+        if (result.error.toLowerCase().includes("email")) {
+          emailInput?.focus();
+        } else {
+          passwordInput?.focus();
+        }
+
+        return;
+      }
+
+      /*
+       * login() has already persisted ceh:current-user.
+       * Redirect immediately without a timeout to avoid flickering.
+       */
+      showMessage("success", `Welcome back, ${result.user.firstName}!`);
+
+      if (result.user.role === "admin") {
+        window.location.replace("admin-dashboard.html#/admin-dashboard");
+      } else {
+        window.location.replace("app.html");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+
+      showMessage(
+        "error",
+        "Something went wrong while signing in. Please try again."
+      );
+
+      setBusy(false);
     }
-
-    showMessage("success", `Welcome back, ${result.user.firstName}! Taking you to your dashboard…`);
-    window.setTimeout(() => {
-      window.location.replace("app.html");
-    }, 900);
   });
 }
 

@@ -46,6 +46,31 @@
   border-bottom: var(--border-solid);
 }
 
+.sidebar-brand .brand {
+  color: var(--color-text);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-tight);
+  white-space: nowrap;
+}
+
+.sidebar-brand .brand:hover {
+  color: var(--color-primary-text);
+  text-decoration: none;
+}
+
+.sidebar-brand .brand-name em {
+  font-style: normal;
+  color: var(--color-primary);
+}
+
+.sidebar-brand .brand-img {
+  width: 2.25rem;
+  height: 2.25rem;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .sidebar-nav {
   flex: 1;
   overflow-y: auto;
@@ -245,29 +270,78 @@
 }
 
 .topbar-search {
-  position: relative;
-  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: min(22rem, calc(100% - 20rem));
+  min-width: 12rem;
+  transform: translate(-50%, -50%);
 }
 
 @media (min-width: 48rem) {
   .topbar-search {
-    display: block;
     width: 16rem;
   }
 }
 
 .topbar-search .input {
-  height: 2.375rem;
-  padding-left: 2.5rem;
+  width: 100%;
+  height: 2.5rem;
+  padding: 0 0.875rem 0 2.625rem;
   font-size: var(--text-sm);
+  background: var(--color-surface);
+  border-color: var(--color-border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+}
+
+.topbar-search .input:hover {
   background: var(--color-surface-muted);
-  border-color: transparent;
+  border-color: var(--color-border-strong);
+}
+
+.topbar-search .input:focus {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-subtle), var(--shadow-xs);
 }
 
 .topbar-search .icon {
-  left: var(--spacing-sm);
+  position: absolute;
+  top: 50%;
+  left: 0.875rem;
+  z-index: 1;
+  transform: translateY(-50%);
   width: 1.125rem;
   height: 1.125rem;
+  color: var(--color-text-subtle);
+  pointer-events: none;
+}
+
+@media (max-width: 47.99rem) {
+  .topbar {
+    gap: var(--spacing-sm);
+  }
+
+  .topbar-left {
+    flex: 0 0 auto;
+  }
+
+  .topbar-right {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .topbar-search {
+    width: min(16rem, calc(100% - 8rem));
+    min-width: 0;
+  }
+
+  .topbar-search .input {
+    height: 2.375rem;
+  }
 }
 
 .notification-bell {
@@ -567,4 +641,203 @@
   width: 2.5rem;
   height: 2.5rem;
   color: var(--color-text-subtle);
+}
+
+/* ------------------------------------------------------------
+   Stage 8 — dashboard quick actions + upcoming list, calendar
+   ------------------------------------------------------------ */
+.quick-actions {
+  display: grid;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 40rem) {
+  .quick-actions {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: var(--border-solid);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.quick-action:hover {
+  text-decoration: none;
+  border-color: var(--brand-300);
+  box-shadow: var(--shadow-sm);
+}
+
+.quick-action-icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: var(--brand-50);
+  color: var(--color-primary);
+}
+
+.quick-action-icon .icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.quick-action > span:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xs);
+}
+
+.quick-action-title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.quick-action-desc {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.quick-action-arrow {
+  width: 1rem;
+  height: 1rem;
+  margin-left: auto;
+  color: var(--color-text-subtle);
+}
+
+/* Event rows (compact list items) */
+.event-row-list {
+  padding: 0 var(--spacing-lg);
+}
+
+.event-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding-block: var(--spacing-md);
+  color: var(--color-text);
+}
+
+.event-row + .event-row {
+  border-top: var(--border-solid);
+}
+
+.event-row:hover {
+  text-decoration: none;
+}
+
+.event-row:hover .event-row-title {
+  color: var(--color-primary-text);
+}
+
+.event-row-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: var(--brand-50);
+  color: var(--color-primary);
+  border: var(--border-width) solid var(--brand-200);
+}
+
+.event-row-date b {
+  font-size: var(--text-md);
+  line-height: 1;
+}
+
+.event-row-date small {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  margin-top: var(--spacing-2xs);
+}
+
+.event-row-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xs);
+  min-width: 0;
+  flex: 1;
+}
+
+.event-row-title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  transition: color var(--transition-fast);
+}
+
+.event-row-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.event-row-divider {
+  width: var(--border-width);
+  height: 1rem;
+  background: var(--color-border-strong);
+}
+
+.event-row .badge {
+  margin-left: auto;
+}
+
+/* Calendar: interactive day cells */
+.calendar-cell {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  color: var(--color-text-muted);
+}
+
+.calendar-cell:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.calendar-cell:not(.is-muted):hover {
+  background: var(--color-surface-muted);
+}
+
+.calendar-cell.is-muted {
+  cursor: default;
+}
+
+.calendar-cell.is-selected {
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+.calendar-cell.is-today.is-selected {
+  box-shadow: inset 0 0 0 2px var(--color-inverse);
+}
+
+/* Day panel shown below the month grid */
+.calendar-day {
+  margin-top: var(--spacing-lg);
+}
+
+.calendar-day .event-row-list {
+  padding-top: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
 }

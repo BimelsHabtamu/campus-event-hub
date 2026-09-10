@@ -1,0 +1,309 @@
+/* ============================================================
+   admin.css — Admin dashboard styles (Stage 9)
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   Admin table
+   ------------------------------------------------------------ */
+.admin-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.admin-table th,
+.admin-table td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-align: left;
+  border-bottom: var(--border-solid);
+  white-space: nowrap;
+}
+
+.admin-table th {
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  position: sticky;
+  top: 0;
+}
+
+.admin-table tbody tr {
+  transition: background-color var(--transition-fast);
+}
+
+.admin-table tbody tr:hover {
+  background: var(--color-primary-subtle);
+}
+
+.admin-table td {
+  vertical-align: middle;
+}
+
+.admin-table .cell-title {
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  max-width: 18rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-table .cell-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+@media (max-width: 640px) {
+  .admin-table-responsive thead {
+    display: none;
+  }
+
+  .admin-table-responsive tbody tr {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-md);
+    border-bottom: var(--border-solid);
+  }
+
+  .admin-table-responsive tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 0;
+    white-space: normal;
+  }
+
+  .admin-table-responsive tbody td::before {
+    content: attr(data-label);
+    font-weight: var(--weight-semibold);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-text-muted);
+  }
+
+  .admin-table-responsive .cell-actions {
+    justify-content: flex-end;
+  }
+}
+
+/* ------------------------------------------------------------
+   Modal
+   ------------------------------------------------------------ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-base);
+  padding: var(--spacing-md);
+}
+
+.modal-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 42rem;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(12px) scale(0.97);
+  transition: transform var(--transition-base);
+}
+
+.modal-overlay.is-open .modal {
+  transform: translateY(0) scale(1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: var(--border-solid);
+}
+
+.modal-header h2 {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+}
+
+.modal-body {
+  padding: var(--spacing-xl);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-top: var(--border-solid);
+}
+
+@media (max-width: 640px) {
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal {
+    max-height: 95vh;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+}
+
+/* ------------------------------------------------------------
+   Section toolbar (search + filters + create button)
+   ------------------------------------------------------------ */
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.admin-toolbar .search-wrap {
+  flex: 1;
+  min-width: 14rem;
+}
+
+.admin-toolbar .search-wrap .input {
+  height: 2.625rem;
+}
+
+.admin-toolbar .select {
+  height: 2.625rem;
+  width: auto;
+}
+
+/* ------------------------------------------------------------
+   Registration list row
+   ------------------------------------------------------------ */
+.reg-list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.reg-list-item + .reg-list-item {
+  border-top: var(--border-solid);
+}
+
+.reg-list-item .avatar {
+  flex-shrink: 0;
+}
+
+.reg-list-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xs);
+  min-width: 0;
+  flex: 1;
+}
+
+.reg-list-name {
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+}
+
+.reg-list-email {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reg-list-event {
+  font-size: var(--text-xs);
+  color: var(--color-primary-text);
+  font-weight: var(--weight-medium);
+}
+
+.reg-list-date {
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .reg-list-item {
+    flex-wrap: wrap;
+  }
+
+  .reg-list-date {
+    width: 100%;
+    margin-top: var(--spacing-2xs);
+  }
+}
+
+/* ------------------------------------------------------------
+   Redirect guard splash
+   ------------------------------------------------------------ */
+.admin-guard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: var(--spacing-md);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.admin-guard .icon {
+  width: 3rem;
+  height: 3rem;
+  color: var(--color-danger);
+}
+
+/* ------------------------------------------------------------
+   Empty state for registrations
+   ------------------------------------------------------------ */
+.admin-empty {
+  padding: var(--spacing-3xl) var(--spacing-lg);
+}
+
+/* ------------------------------------------------------------
+   Badge tweaks for admin table
+   ------------------------------------------------------------ */
+.admin-cat-badge {
+  display: inline-flex;
+  padding: 0.15em 0.6em;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  background: var(--brand-50);
+  color: var(--brand-700);
+}
+
+.admin-reg-count {
+  font-variant-numeric: tabular-nums;
+}

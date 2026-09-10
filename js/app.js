@@ -6,6 +6,8 @@ import { getCurrentUser, logout } from "./auth.js";
 const MENU_ICONS = {
   dashboard: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
   saved: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5h12V20l-6-4-6 4z"/></svg>',
+  profile: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.5 4.2-5 8-5s6.5 1.5 8 5"/></svg>',
+  settings: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
   logout: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>',
   chevron: '<svg class="icon user-menu-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>',
 };
@@ -83,8 +85,13 @@ function renderAuthNav() {
     return item;
   };
 
-  panel.appendChild(addItem(MENU_ICONS.dashboard, "Dashboard", "app.html#/dashboard"));
-  panel.appendChild(addItem(MENU_ICONS.saved, "Saved events", "app.html#/saved"));
+  const dashHref = user.role === "admin" ? "admin-dashboard.html" : "app.html#/dashboard";
+  panel.appendChild(addItem(MENU_ICONS.dashboard, user.role === "admin" ? "Admin Dashboard" : "Dashboard", dashHref));
+  if (user.role !== "admin") {
+    panel.appendChild(addItem(MENU_ICONS.saved, "Saved events", "app.html#/saved"));
+  }
+  panel.appendChild(addItem(MENU_ICONS.profile, "Profile", "profile.html"));
+  panel.appendChild(addItem(MENU_ICONS.settings, "Settings", "settings.html"));
 
   const logoutItem = addItem(MENU_ICONS.logout, "Log out", null, true);
   logoutItem.addEventListener("click", () => {

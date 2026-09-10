@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Account settings, notification preferences, and password security.">
+  <title>Settings · Campus Event &amp; Activity Hub</title>
+  <link rel="icon" href="../images/logo/logo.png" type="image/png">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout-dashboard.css">
+  <script type="module">
+    import { isLoggedIn, getCurrentUser } from "../js/auth.js";
+
+    if (!isLoggedIn() || !getCurrentUser()) {
+      window.location.replace("login.html");
+    }
+  </script>
+</head>
+<body class="app-shell" id="app-shell">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- ==================== Sidebar ==================== -->
+  <aside class="sidebar" id="sidebar" aria-label="Sidebar">
+    <div class="sidebar-brand">
+      <a class="brand" href="index.html" title="Back to public site">
+        <img class="brand-img" src="../images/logo/logo.png" alt="CampusHub" width="36" height="36">
+        <span class="brand-name">Campus<em>Hub</em></span>
+      </a>
+      <button class="icon-btn sidebar-close" id="sidebar-close" type="button" aria-label="Close sidebar">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav" id="sidebar-nav" aria-label="Main navigation">
+      <!-- Student section (shown if student) -->
+      <div class="nav-section" id="student-nav-section">
+        <span class="nav-section-title">Main</span>
+        <a class="nav-item" href="app.html#/dashboard" id="nav-student-dashboard">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a class="nav-item" href="app.html#/my-events">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+          <span class="nav-label">My Events</span>
+        </a>
+        <a class="nav-item" href="app.html#/saved">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5h12V20l-6-4-6 4z"/></svg>
+          <span class="nav-label">Saved</span>
+        </a>
+        <a class="nav-item" href="app.html#/calendar">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="8" cy="14" r="1"/><circle cx="12" cy="14" r="1"/><circle cx="16" cy="14" r="1"/></svg>
+          <span class="nav-label">Calendar</span>
+        </a>
+      </div>
+
+      <!-- Admin section (shown if admin) -->
+      <div class="nav-section" id="admin-nav-section" hidden>
+        <span class="nav-section-title">Admin Management</span>
+        <a class="nav-item" href="admin-dashboard.html" id="nav-admin-dashboard">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          <span class="nav-label">Admin Dashboard</span>
+        </a>
+        <a class="nav-item" href="admin-dashboard.html#/manage-events">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+          <span class="nav-label">Manage Events</span>
+        </a>
+        <a class="nav-item" href="admin-dashboard.html#/registrations">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
+          <span class="nav-label">Registrations</span>
+        </a>
+      </div>
+
+      <!-- Account section (both) -->
+      <div class="nav-section">
+        <span class="nav-section-title">Account</span>
+        <a class="nav-item" href="profile.html">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.5 4.2-5 8-5s6.5 1.5 8 5"/></svg>
+          <span class="nav-label">Profile</span>
+        </a>
+        <a class="nav-item active" href="settings.html" aria-current="page">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+          <span class="nav-label">Settings</span>
+        </a>
+      </div>
+
+      <a class="nav-item nav-item-danger" id="logout-link" href="login.html">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        <span class="nav-label">Logout</span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebar-overlay" hidden="hidden"></div>
+
+  <!-- ==================== Main column ==================== -->
+  <div class="app-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="icon-btn sidebar-toggle" id="sidebar-toggle" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle sidebar">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <h1 class="page-title" id="page-title">Settings</h1>
+      </div>
+
+      <div class="topbar-right">
+        <span class="badge badge-brand" id="topbar-role-badge">Student</span>
+        <a class="user-chip" href="profile.html" aria-label="Your profile">
+          <span class="avatar" aria-hidden="true" id="topbar-avatar">--</span>
+          <span class="user-chip-meta">
+            <span class="user-chip-name" id="topbar-name">Loading…</span>
+            <span class="user-chip-role" id="topbar-role">Student</span>
+          </span>
+        </a>
+      </div>
+    </header>
+
+    <main id="main-content" class="app-content">
+      <header class="page-header">
+        <h1>Settings &amp; Preferences</h1>
+        <p>Configure notification delivery, account password, and view your profile status.</p>
+      </header>
+
+      <div style="display:flex;flex-direction:column;gap:var(--spacing-xl);max-width:54rem;">
+
+        <!-- 1. Notification Preferences -->
+        <section class="card" aria-labelledby="heading-notifications">
+          <header class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <h2 class="card-title" id="heading-notifications">Notification Preferences</h2>
+              <p class="text-sm text-muted" style="margin-top:0.25rem;">Control how and when CampusHub alerts you about campus events.</p>
+            </div>
+            <span id="notif-saved-tag" class="badge badge-success" style="opacity:0;transition:opacity 0.3s ease;">Saved</span>
+          </header>
+          <div class="card-body settings-list">
+            <div class="settings-row">
+              <div>
+                <p class="settings-row-title">Email Reminders</p>
+                <p class="settings-row-desc">Receive an email reminder 24 hours before your registered events begin.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="notif-email-reminders" checked>
+                <span class="switch-track" aria-hidden="true"></span>
+                <span class="visually-hidden">Enable email reminders</span>
+              </label>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <p class="settings-row-title">In-App Alerts</p>
+                <p class="settings-row-desc">Display badges and notification banners for upcoming and saved events.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="notif-in-app-alerts" checked>
+                <span class="switch-track" aria-hidden="true"></span>
+                <span class="visually-hidden">Enable in-app alerts</span>
+              </label>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <p class="settings-row-title">Weekly Campus Digest</p>
+                <p class="settings-row-desc">A Monday morning summary of top workshops, hackathons, and activities.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="notif-weekly-digest">
+                <span class="switch-track" aria-hidden="true"></span>
+                <span class="visually-hidden">Enable weekly digest</span>
+              </label>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <p class="settings-row-title">Event Schedule &amp; Venue Updates</p>
+                <p class="settings-row-desc">Immediate alerts if an event you registered for changes its time or hall.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="notif-event-updates" checked>
+                <span class="switch-track" aria-hidden="true"></span>
+                <span class="visually-hidden">Enable event schedule updates</span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Change Password -->
+        <section class="card" aria-labelledby="heading-password">
+          <header class="card-header">
+            <h2 class="card-title" id="heading-password">Change Password</h2>
+            <p class="text-sm text-muted" style="margin-top:0.25rem;">Update your account password. Use at least 8 characters with letters and numbers.</p>
+          </header>
+          <div class="card-body">
+            <div id="pw-message" class="form-message" hidden></div>
+
+            <form id="password-form" novalidate style="max-width:32rem;">
+              <div class="form-field">
+                <label class="form-label" for="pw-current">Current Password <span class="text-danger">*</span></label>
+                <input id="pw-current" class="input" type="password" required autocomplete="current-password">
+                <span id="pw-current-error" class="field-error" role="alert" hidden></span>
+              </div>
+
+              <div class="form-row cols-2">
+                <div class="form-field">
+                  <label class="form-label" for="pw-new">New Password <span class="text-danger">*</span></label>
+                  <input id="pw-new" class="input" type="password" required autocomplete="new-password" minlength="8">
+                  <span id="pw-new-error" class="field-error" role="alert" hidden></span>
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="pw-confirm">Confirm New Password <span class="text-danger">*</span></label>
+                  <input id="pw-confirm" class="input" type="password" required autocomplete="new-password" minlength="8">
+                  <span id="pw-confirm-error" class="field-error" role="alert" hidden></span>
+                </div>
+              </div>
+
+              <div class="form-actions" style="margin-top:var(--spacing-md);">
+                <button class="btn btn-primary" type="submit" id="pw-submit-btn">Update password</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- 3. Profile & Account Summary -->
+        <section class="card" aria-labelledby="heading-account-summary">
+          <header class="card-header">
+            <h2 class="card-title" id="heading-account-summary">Account &amp; Profile Information</h2>
+            <p class="text-sm text-muted" style="margin-top:0.25rem;">Quick overview of your active credentials.</p>
+          </header>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(13rem, 1fr));gap:var(--spacing-md);margin-bottom:var(--spacing-lg);">
+              <div style="background:var(--color-surface-muted);padding:var(--spacing-md);border-radius:var(--radius-md);">
+                <span class="text-xs text-muted" style="display:block;margin-bottom:0.25rem;">Full Name</span>
+                <strong id="summary-name" style="font-size:var(--text-md);color:var(--color-text);">—</strong>
+              </div>
+              <div style="background:var(--color-surface-muted);padding:var(--spacing-md);border-radius:var(--radius-md);">
+                <span class="text-xs text-muted" style="display:block;margin-bottom:0.25rem;">Email Address</span>
+                <strong id="summary-email" style="font-size:var(--text-md);color:var(--color-text);">—</strong>
+              </div>
+              <div style="background:var(--color-surface-muted);padding:var(--spacing-md);border-radius:var(--radius-md);">
+                <span class="text-xs text-muted" style="display:block;margin-bottom:0.25rem;">Student / Staff ID</span>
+                <strong id="summary-id" style="font-size:var(--text-md);color:var(--color-text);">—</strong>
+              </div>
+              <div style="background:var(--color-surface-muted);padding:var(--spacing-md);border-radius:var(--radius-md);">
+                <span class="text-xs text-muted" style="display:block;margin-bottom:0.25rem;">Account Role</span>
+                <strong id="summary-role" style="font-size:var(--text-md);color:var(--color-text);">Student</strong>
+              </div>
+            </div>
+
+            <div>
+              <a class="btn btn-secondary" href="profile.html">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:1rem;height:1rem;margin-right:0.35rem;"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.5 4.2-5 8-5s6.5 1.5 8 5"/></svg>
+                Manage Profile Details
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Danger Zone -->
+        <section class="card danger-zone" aria-labelledby="heading-danger">
+          <header class="card-header">
+            <h2 class="card-title" id="heading-danger">Session Management</h2>
+          </header>
+          <div class="card-body">
+            <h3>Sign out of this session</h3>
+            <p class="text-sm text-muted">Safely end your current login session on this browser. You can sign back in at any time.</p>
+            <div style="margin-top:0.75rem;">
+              <button class="btn btn-danger" type="button" id="btn-logout-session">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:1rem;height:1rem;margin-right:0.35rem;"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+                Sign out
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="../js/settings.js"></script>
+  <noscript>
+    <p class="text-center" style="padding:1rem;">JavaScript is required to manage your settings.</p>
+  </noscript>
+</body>
+</html>

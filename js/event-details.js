@@ -1,479 +1,1095 @@
-/* ============================================================
-   event-details.js — Stage 5: Event Details & Live Countdown
-   ------------------------------------------------------------
-   1. Reads event id from URL query param (?id=...)
-   2. Dynamically finds event in mock dataset (data.js)
-   3. Displays all metadata (image, title, category, description,
-      date, time range, location, organizer, capacity, reg info)
-   4. Live countdown for upcoming events (ticking every second)
-   5. Dynamic state handling: Upcoming, Happening now, Completed
-   6. Save/Bookmark persistence via store.js
-   7. Professional Event Not Found state for invalid/missing ids
-   ============================================================ */
-
 import { EVENTS, CATEGORY_LABEL } from "./data.js";
 import { formatDateLabel, formatTime, formatDuration } from "./utils.js";
 import { getCountdownParts, pad } from "./countdown.js";
-import { isEventSaved, saveEvent, unsaveEvent } from "./store.js";
+import {
+  saveEvent,
+  unsaveEvent,
+  getUserRegistration,
+  registerForEvent,
+  cancelEventRegistration,
+  getEventCapacityStats,
+} from "./store.js";
 import { initNav } from "./site-nav.js";
 import { getCurrentUser, logout } from "./auth.js";
 
+let countdownInterval = null;
+let liveEndTimeout = null;
+let currentActiveEvent = null;
+
 /* ------------------------------------------------------------
-   State Evaluation
-   ------------------------------------------------------------ */
+   Helpers
+------------------------------------------------------------ */
 
-/**
- * Determine event status relative to the current time.
- * @param {import("./data.js").Event} event
- * @returns {{ status: "upcoming" | "live" | "completed", label: string, badgeClass: string, startMs: number, endMs: number }}
- */
-export function getEventState(event) {
-  const now = Date.now();
-  const startMs = new Date(event.startDateTime).getTime();
-  const duration = (event.durationMinutes && event.durationMinutes > 0) ? event.durationMinutes : 60;
-  const endMs = startMs + duration * 60000;
-
-  if (now < startMs) {
-    return {
-      status: "upcoming",
-      label: "Upcoming",
-      badgeClass: "badge-upcoming",
-      startMs,
-      endMs,
-    };
-  }
-  if (now >= startMs && now <= endMs) {
-    return {
-      status: "live",
-      label: "Happening Now",
-      badgeClass: "badge-live",
-      startMs,
-      endMs,
-    };
-  }
-  return {
-    status: "completed",
-    label: "Completed",
-    badgeClass: "badge-completed",
-    startMs,
-    endMs,
-  };
+function $(selector) {
+  return document.querySelector(selector);
 }
 
-/* ------------------------------------------------------------
-   Toast Notifications
-   ------------------------------------------------------------ */
-let toastTimeout = null;
-function showToast(message) {
-  let toast = document.getElementById("event-toast");
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function showToast(message, type = "info") {
+  let toast = $("#site-toast");
+
   if (!toast) {
     toast = document.createElement("div");
-    toast.id = "event-toast";
-    toast.className = "event-toast";
-    toast.setAttribute("role", "status");
-    toast.setAttribute("aria-live", "polite");
+    toast.id = "site-toast";
+    toast.className = "toast";
     document.body.appendChild(toast);
   }
-  toast.textContent = message;
-  toast.classList.add("show");
 
-  window.clearTimeout(toastTimeout);
-  toastTimeout = window.setTimeout(() => {
-    toast.classList.remove("show");
-  }, 2800);
+  toast.textContent = message;
+  toast.dataset.type = type;
+  toast.classList.add("is-visible");
+
+  window.clearTimeout(toast._timer);
+
+  toast._timer = window.setTimeout(() => {
+    toast.classList.remove("is-visible");
+  }, 3200);
+}
+
+function getEventState(event) {
+  const startMs = new Date(event.startDateTime).getTime();
+
+  if (!Number.isFinite(startMs)) {
+    return "upcoming";
+  }
+
+  const durationMinutes = Number(event.durationMinutes) || 60;
+  const endMs = startMs + durationMinutes * 60 * 1000;
+  const now = Date.now();
+
+  if (now >= endMs) {
+    return "completed";
+  }
+
+  if (now >= startMs && now < endMs) {
+    return "live";
+  }
+
+  return "upcoming";
+}
+
+function getStateLabel(state) {
+  const labels = {
+    upcoming: "Upcoming",
+    live: "Live Now",
+    completed: "Completed",
+  };
+
+  return labels[state] || "Upcoming";
+}
+
+function clearTimers() {
+  if (countdownInterval) {
+    window.clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+
+  if (liveEndTimeout) {
+    window.clearTimeout(liveEndTimeout);
+    liveEndTimeout = null;
+  }
 }
 
 /* ------------------------------------------------------------
-   Navbar User Session Menu
-   ------------------------------------------------------------ */
-let detachUserMenu = null;
+   Navigation
+------------------------------------------------------------ */
+
 function renderAuthNav() {
-  const actions = document.getElementById("nav-actions");
-  if (!actions) return;
+  const container = $("#nav-auth");
 
-  if (typeof detachUserMenu === "function") {
-    detachUserMenu();
-    detachUserMenu = null;
-  }
-  actions.replaceChildren();
-
-  const user = getCurrentUser();
-  if (!user) {
-    const login = document.createElement("a");
-    login.className = "btn btn-ghost";
-    login.href = "login.html";
-    login.textContent = "Log in";
-
-    const signup = document.createElement("a");
-    signup.className = "btn btn-primary";
-    signup.href = "register.html";
-    signup.textContent = "Get started";
-
-    actions.append(login, signup);
+  if (!container) {
     return;
   }
 
-  const menu = document.createElement("div");
-  menu.className = "user-menu";
+  const user = getCurrentUser();
 
-  const trigger = document.createElement("button");
-  trigger.type = "button";
-  trigger.className = "user-menu-trigger";
-  trigger.setAttribute("aria-haspopup", "true");
-  trigger.setAttribute("aria-expanded", "false");
-  trigger.setAttribute("aria-label", `Account menu for ${user.name}`);
+  if (!user) {
+    container.innerHTML = `
+      <a class="btn btn-ghost btn-sm" href="login.html">Log in</a>
+      <a class="btn btn-primary btn-sm" href="register.html">Create account</a>
+    `;
+    return;
+  }
 
-  const avatar = document.createElement("span");
-  avatar.className = "avatar";
-  avatar.textContent = user.avatarInitials || user.name.slice(0, 2).toUpperCase();
+  const displayName = user.name || user.fullName || user.email || "User";
+  const initials = displayName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
 
-  const name = document.createElement("span");
-  name.className = "user-menu-name";
-  name.textContent = user.name.split(" ")[0];
+  container.innerHTML = `
+    <div class="nav-user">
+      <button
+        class="nav-user-trigger"
+        type="button"
+        aria-expanded="false"
+        aria-label="Open user menu"
+      >
+        <span class="avatar avatar-sm">${escapeHtml(initials || "U")}</span>
+        <span class="nav-user-name">${escapeHtml(displayName)}</span>
+        <span aria-hidden="true">⌄</span>
+      </button>
 
-  trigger.append(avatar, name);
+      <div class="nav-user-menu" hidden>
+        <a href="${user.role === 'admin' ? 'admin-dashboard.html' : 'app.html#/dashboard'}">${user.role === 'admin' ? 'Admin Dashboard' : 'Dashboard'}</a>
+        ${user.role !== 'admin' ? '<a href="app.html#/saved">Saved Events</a>' : ''}
+        <a href="profile.html">Profile</a>
+        <a href="settings.html">Settings</a>
+        <button type="button" data-action="logout">Log out</button>
+      </div>
+    </div>
+  `;
 
-  const dropdown = document.createElement("div");
-  dropdown.className = "user-menu-dropdown";
-  dropdown.setAttribute("role", "menu");
+  const trigger = container.querySelector(".nav-user-trigger");
+  const menu = container.querySelector(".nav-user-menu");
+  const logoutButton = container.querySelector('[data-action="logout"]');
 
-  const dashItem = document.createElement("a");
-  dashItem.className = "user-menu-item";
-  dashItem.href = "app.html#/dashboard";
-  dashItem.textContent = "Dashboard";
+  trigger?.addEventListener("click", () => {
+    const isOpen = trigger.getAttribute("aria-expanded") === "true";
 
-  const savedItem = document.createElement("a");
-  savedItem.className = "user-menu-item";
-  savedItem.href = "app.html#/saved";
-  savedItem.textContent = "Saved events";
-
-  const logoutBtn = document.createElement("button");
-  logoutBtn.type = "button";
-  logoutBtn.className = "user-menu-item user-menu-item-danger";
-  logoutBtn.textContent = "Log out";
-  logoutBtn.addEventListener("click", () => {
-    logout();
-    renderAuthNav();
+    trigger.setAttribute("aria-expanded", String(!isOpen));
+    menu.hidden = isOpen;
   });
 
-  dropdown.append(dashItem, savedItem, logoutBtn);
-  menu.append(trigger, dropdown);
-  actions.appendChild(menu);
-
-  const toggleDropdown = (open) => {
-    const isExpanded = open ?? !dropdown.classList.contains("is-open");
-    dropdown.classList.toggle("is-open", isExpanded);
-    trigger.setAttribute("aria-expanded", String(isExpanded));
-  };
-
-  const onTriggerClick = (e) => {
-    e.stopPropagation();
-    toggleDropdown();
-  };
-
-  const onDocClick = (e) => {
-    if (!menu.contains(e.target)) toggleDropdown(false);
-  };
-
-  trigger.addEventListener("click", onTriggerClick);
-  document.addEventListener("click", onDocClick);
-
-  detachUserMenu = () => {
-    trigger.removeEventListener("click", onTriggerClick);
-    document.removeEventListener("click", onDocClick);
-  };
+  logoutButton?.addEventListener("click", () => {
+    logout();
+    window.location.reload();
+  });
 }
 
 /* ------------------------------------------------------------
-   Countdown Controller
-   ------------------------------------------------------------ */
-let countdownTimer = null;
+   Countdown
+------------------------------------------------------------ */
 
-function clearLiveCountdown() {
-  if (countdownTimer) {
-    window.clearInterval(countdownTimer);
-    countdownTimer = null;
-  }
-}
+function updateCountdown(targetDate) {
+  const daysEl = $("#countdown-days");
+  const hoursEl = $("#countdown-hours");
+  const minutesEl = $("#countdown-minutes");
+  const secondsEl = $("#countdown-seconds");
 
-/**
- * Initialize live countdown updating every 1000ms.
- * When event starts, triggers state refresh.
- */
-function initCountdown(targetIso, onComplete) {
-  clearLiveCountdown();
-
-  const daysEl = document.getElementById("countdown-days");
-  const hoursEl = document.getElementById("countdown-hours");
-  const minutesEl = document.getElementById("countdown-minutes");
-  const secondsEl = document.getElementById("countdown-seconds");
-
-  if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return;
-
-  const update = () => {
-    const parts = getCountdownParts(targetIso);
-
-    daysEl.textContent = pad(parts.days);
-    hoursEl.textContent = pad(parts.hours);
-    minutesEl.textContent = pad(parts.minutes);
-    secondsEl.textContent = pad(parts.seconds);
-
-    if (parts.isPast) {
-      clearLiveCountdown();
-      if (typeof onComplete === "function") {
-        onComplete();
-      }
-    }
-  };
-
-  update();
-  countdownTimer = window.setInterval(update, 1000);
-}
-
-/* ------------------------------------------------------------
-   Render: Event Not Found State
-   ------------------------------------------------------------ */
-function renderNotFound(invalidId) {
-  clearLiveCountdown();
-
-  const contentEl = document.getElementById("event-content");
-  const notFoundEl = document.getElementById("event-not-found");
-  const invalidIdDisplay = document.getElementById("invalid-event-id");
-
-  if (contentEl) contentEl.hidden = true;
-  if (notFoundEl) notFoundEl.hidden = false;
-
-  if (invalidIdDisplay) {
-    invalidIdDisplay.textContent = invalidId ? `"${invalidId}"` : "(none provided)";
+  if (!daysEl || !hoursEl || !minutesEl || !secondsEl) {
+    return;
   }
 
-  document.title = "Event Not Found · Campus Event & Activity Hub";
+  const parts = getCountdownParts(targetDate);
+
+  daysEl.textContent = pad(parts.days);
+  hoursEl.textContent = pad(parts.hours);
+  minutesEl.textContent = pad(parts.minutes);
+  secondsEl.textContent = pad(parts.seconds);
 }
 
-/* ------------------------------------------------------------
-   Render: Event Details
-   ------------------------------------------------------------ */
-function renderEventDetails(event) {
-  const contentEl = document.getElementById("event-content");
-  const notFoundEl = document.getElementById("event-not-found");
+function startCountdown(event) {
+  clearTimers();
 
-  if (notFoundEl) notFoundEl.hidden = true;
-  if (contentEl) contentEl.hidden = false;
+  const startMs = new Date(event.startDateTime).getTime();
 
-  // Set document title
-  document.title = `${event.title} · Campus Event & Activity Hub`;
+  if (!Number.isFinite(startMs)) {
+    return;
+  }
 
-  // Determine state
   const state = getEventState(event);
 
-  // Category & Status badges
-  const categoryBadge = document.getElementById("event-category-badge");
-  if (categoryBadge) {
-    categoryBadge.textContent = CATEGORY_LABEL[event.category] ?? event.category;
+  if (state !== "upcoming") {
+    return;
   }
 
-  const statusBadge = document.getElementById("event-status-badge");
-  if (statusBadge) {
-    statusBadge.className = `badge ${state.badgeClass}`;
-    statusBadge.textContent = state.label;
+  updateCountdown(event.startDateTime);
+
+  countdownInterval = window.setInterval(() => {
+    const currentState = getEventState(event);
+
+    if (currentState !== "upcoming") {
+      clearTimers();
+      renderEventDetails(event);
+      return;
+    }
+
+    updateCountdown(event.startDateTime);
+  }, 1000);
+}
+
+function startLiveTimer(event) {
+  clearTimers();
+
+  const startMs = new Date(event.startDateTime).getTime();
+  const durationMinutes = Number(event.durationMinutes) || 60;
+  const endMs = startMs + durationMinutes * 60 * 1000;
+
+  if (!Number.isFinite(endMs)) {
+    return;
   }
 
-  // Title & Organizer
-  const titleEl = document.getElementById("event-title");
-  if (titleEl) titleEl.textContent = event.title;
+  const remaining = Math.max(0, endMs - Date.now());
 
-  const organizerEl = document.getElementById("event-organizer-name");
-  if (organizerEl) organizerEl.textContent = event.organizer;
+  liveEndTimeout = window.setTimeout(() => {
+    renderEventDetails(event);
+  }, remaining + 100);
+}
 
-  // Media Cover Image
-  const imgEl = document.getElementById("event-image");
-  if (imgEl) {
-    imgEl.src = event.image || "../images/placeholder-event.svg";
-    imgEl.alt = event.title;
-    imgEl.onerror = () => {
-      imgEl.src = "../images/placeholder-event.svg";
+/* ------------------------------------------------------------
+   Event Details
+------------------------------------------------------------ */
+
+function renderNotFound() {
+  const container = $("#event-details-content");
+
+  if (container) {
+    container.innerHTML = `
+      <section class="event-not-found">
+        <div class="event-not-found-icon" aria-hidden="true">📅</div>
+        <h1>Event not found</h1>
+        <p>
+          We couldn't find the event you're looking for.
+          It may have been removed or the link may be incorrect.
+        </p>
+        <a class="btn btn-primary" href="events.html">
+          Browse events
+        </a>
+      </section>
+    `;
+  }
+
+  const registration = $("#event-registration");
+
+  if (registration) {
+    registration.hidden = true;
+  }
+}
+
+function renderEventDetails(event) {
+  currentActiveEvent = event;
+
+  const state = getEventState(event);
+
+  clearTimers();
+
+  document.title = `${event.title || "Event"} | Campus Event Hub`;
+
+  const titleEl = $("#event-title");
+  const organizerEl = $("#event-organizer, #event-organizer-name");
+  const categoryEl = $("#event-category, #event-category-badge");
+  const statusEl = $("#event-status, #event-status-badge");
+  const imageEl = $("#event-image");
+  const descriptionEl = $("#event-description");
+  const tagsEl = $("#event-tags");
+
+  if (titleEl) {
+    titleEl.textContent = event.title || "Untitled Event";
+  }
+
+  if (organizerEl) {
+    organizerEl.textContent = event.organizer || "Campus Event Hub";
+  }
+
+  if (categoryEl) {
+    categoryEl.textContent =
+      CATEGORY_LABEL?.[event.category] ||
+      event.category ||
+      "General";
+  }
+
+  if (statusEl) {
+    statusEl.textContent = getStateLabel(state);
+    statusEl.dataset.state = state;
+  }
+
+  if (imageEl) {
+    imageEl.src =
+      event.image ||
+      "../images/events/placeholder-event.svg";
+
+    imageEl.alt = event.title || "Event image";
+
+    imageEl.onerror = () => {
+      imageEl.src = "../images/events/placeholder-event.svg";
     };
   }
 
-  // State Banner & Countdown Section
-  const countdownSection = document.getElementById("countdown-section");
-  const liveBanner = document.getElementById("event-live-banner");
-  const completedBanner = document.getElementById("event-completed-banner");
-
-  if (countdownSection) countdownSection.hidden = true;
-  if (liveBanner) liveBanner.hidden = true;
-  if (completedBanner) completedBanner.hidden = true;
-
-  if (state.status === "upcoming") {
-    if (countdownSection) countdownSection.hidden = false;
-    initCountdown(event.startDateTime, () => {
-      // Transition from upcoming to happening now
-      renderEventDetails(event);
-    });
-  } else if (state.status === "live") {
-    if (liveBanner) {
-      liveBanner.hidden = false;
-      const liveTimes = document.getElementById("live-banner-times");
-      if (liveTimes) {
-        liveTimes.textContent = `Started at ${formatTime(event.startDateTime)} and runs until ${formatTime(new Date(state.endMs))}.`;
-      }
-    }
-  } else {
-    // completed
-    if (completedBanner) {
-      completedBanner.hidden = false;
-      const completedDate = document.getElementById("completed-banner-date");
-      if (completedDate) {
-        completedDate.textContent = `This event ended on ${formatDateLabel(event.startDateTime)}.`;
-      }
-    }
+  if (descriptionEl) {
+    descriptionEl.innerHTML =
+      event.description ||
+      event.about ||
+      "No description is available for this event.";
   }
 
-  // Description
-  const descEl = document.getElementById("event-description");
-  if (descEl) descEl.textContent = event.description;
+  if (tagsEl) {
+    const tags = Array.isArray(event.tags) ? event.tags : [];
 
-  // Tags
-  const tagsContainer = document.getElementById("event-tags-container");
-  const tagsList = document.getElementById("event-tags-list");
-  if (tagsContainer && tagsList) {
-    tagsList.replaceChildren();
-    if (Array.isArray(event.tags) && event.tags.length > 0) {
-      tagsContainer.hidden = false;
-      event.tags.forEach((tag) => {
-        const chip = document.createElement("span");
-        chip.className = "event-tag-chip";
-        chip.textContent = `#${tag}`;
-        tagsList.appendChild(chip);
-      });
-    } else {
-      tagsContainer.hidden = true;
-    }
+    tagsEl.innerHTML = tags.length
+      ? tags
+          .map(
+            (tag) =>
+              `<span class="chip">${escapeHtml(tag)}</span>`,
+          )
+          .join("")
+      : "";
   }
 
-  // Registration Info
-  const regCapacity = document.getElementById("reg-capacity-val");
-  if (regCapacity) regCapacity.textContent = `${event.capacity} seats`;
+  renderEventState(event, state);
+  renderEventMeta(event);
+  renderSaveButton(event);
+  renderRegistrationSection(event);
+  setupShareButton(event);
+  setupBackButton();
+  setupSaveButton(event);
 
-  // Sidebar Metadata
-  const dateVal = document.getElementById("meta-date-val");
-  if (dateVal) dateVal.textContent = formatDateLabel(event.startDateTime);
-
-  const timeVal = document.getElementById("meta-time-val");
-  if (timeVal) {
-    const duration = event.durationMinutes || 60;
-    const endIso = new Date(new Date(event.startDateTime).getTime() + duration * 60000);
-    timeVal.textContent = `${formatTime(event.startDateTime)} – ${formatTime(endIso)}`;
-  }
-
-  const durationVal = document.getElementById("meta-duration-val");
-  if (durationVal) {
-    durationVal.textContent = `Duration: ${formatDuration(event.durationMinutes || 60)}`;
-  }
-
-  const locationVal = document.getElementById("meta-location-val");
-  if (locationVal) locationVal.textContent = event.location;
-
-  const organizerVal = document.getElementById("meta-organizer-val");
-  if (organizerVal) organizerVal.textContent = event.organizer;
-
-  const capacityVal = document.getElementById("meta-capacity-val");
-  if (capacityVal) capacityVal.textContent = `${event.capacity} attendees max`;
-
-  const categoryVal = document.getElementById("meta-category-val");
-  if (categoryVal) {
-    categoryVal.textContent = CATEGORY_LABEL[event.category] ?? event.category;
-  }
-
-  // Save / Bookmark Buttons
-  const saveButtons = document.querySelectorAll(".btn-save-event");
-  const updateSaveButtons = () => {
-    const saved = isEventSaved(event.id);
-    saveButtons.forEach((btn) => {
-      btn.setAttribute("aria-pressed", String(saved));
-      const textSpan = btn.querySelector(".save-btn-text");
-      if (textSpan) {
-        textSpan.textContent = saved ? "Saved in bookmarks" : "Save event";
-      }
-    });
-  };
-
-  updateSaveButtons();
-
-  saveButtons.forEach((btn) => {
-    // Avoid attaching multiple duplicate listeners
-    if (!btn.dataset.bound) {
-      btn.dataset.bound = "true";
-      btn.addEventListener("click", () => {
-        const currentlySaved = isEventSaved(event.id);
-        if (currentlySaved) {
-          unsaveEvent(event.id);
-          showToast("Event removed from saved events.");
-        } else {
-          saveEvent(event.id);
-          showToast("Event saved to your bookmarks!");
-        }
-        updateSaveButtons();
-      });
-    }
-  });
-
-  // Share button
-  const shareBtn = document.getElementById("btn-share-event");
-  if (shareBtn && !shareBtn.dataset.bound) {
-    shareBtn.dataset.bound = "true";
-    shareBtn.addEventListener("click", async () => {
-      try {
-        if (navigator.clipboard) {
-          await navigator.clipboard.writeText(window.location.href);
-          showToast("Link copied to clipboard!");
-        } else {
-          showToast("URL: " + window.location.href);
-        }
-      } catch {
-        showToast("Link: " + window.location.href);
-      }
-    });
+  if (state === "upcoming") {
+    startCountdown(event);
+  } else if (state === "live") {
+    startLiveTimer(event);
   }
 }
 
+function renderEventState(event, state) {
+  const countdownSection = $("#event-countdown");
+  const liveBanner = $("#event-live-banner");
+  const completedBanner = $("#event-completed-banner");
+
+  if (countdownSection) {
+    countdownSection.hidden = state !== "upcoming";
+  }
+
+  if (liveBanner) {
+    liveBanner.hidden = state !== "live";
+  }
+
+  if (completedBanner) {
+    completedBanner.hidden = state !== "completed";
+  }
+
+  if (state === "upcoming") {
+    updateCountdown(event.startDateTime);
+  }
+}
+
+function renderEventMeta(event) {
+  const dateEls = [
+    $("#event-date"),
+    $("#sidebar-event-date"),
+    $("#meta-date-val"),
+  ];
+
+  dateEls.forEach((element) => {
+    if (element) {
+      element.textContent = formatDateLabel(event.startDateTime);
+    }
+  });
+
+  const timeEls = [
+    $("#event-time"),
+    $("#sidebar-event-time"),
+    $("#meta-time-val"),
+  ];
+
+  timeEls.forEach((element) => {
+    if (element) {
+      element.textContent = formatTime(event.startDateTime);
+    }
+  });
+
+  const durationEl = $("#event-duration");
+  const metaDurationEl = $("#meta-duration-val");
+
+  if (durationEl) {
+    durationEl.textContent = formatDuration(
+      Number(event.durationMinutes) || 60,
+    );
+  }
+  if (metaDurationEl) {
+    metaDurationEl.textContent = formatDuration(
+      Number(event.durationMinutes) || 60,
+    );
+  }
+
+  const locationEls = [
+    $("#event-location"),
+    $("#sidebar-event-location"),
+    $("#meta-location-val"),
+  ];
+
+  locationEls.forEach((element) => {
+    if (element) {
+      element.textContent =
+        event.location ||
+        event.venue ||
+        "Campus";
+    }
+  });
+
+  const organizerEls = [
+    $("#event-organizer"),
+    $("#sidebar-event-organizer"),
+    $("#meta-organizer-val"),
+  ];
+
+  organizerEls.forEach((element) => {
+    if (element) {
+      element.textContent =
+        event.organizer ||
+        "Campus Event Hub";
+    }
+  });
+
+  const categoryEls = [
+    $("#event-category"),
+    $("#sidebar-event-category"),
+    $("#meta-category-val"),
+  ];
+
+  categoryEls.forEach((element) => {
+    if (element) {
+      element.textContent =
+        CATEGORY_LABEL?.[event.category] ||
+        event.category ||
+        "General";
+    }
+  });
+
+  const capacityStats = getEventCapacityStats(event);
+
+  const capacityEls = [
+    $("#event-capacity"),
+    $("#sidebar-event-capacity"),
+    $("#meta-capacity-val"),
+  ];
+
+  capacityEls.forEach((element) => {
+    if (element) {
+      element.textContent =
+        capacityStats.total > 0
+          ? `${capacityStats.available} seats available`
+          : "Open registration";
+    }
+  });
+}
+
 /* ------------------------------------------------------------
-   Page Boot
-   ------------------------------------------------------------ */
+   Save / Share
+------------------------------------------------------------ */
+
+function renderSaveButton(event) {
+  const buttons = document.querySelectorAll(
+    '[data-action="save-event"]',
+  );
+
+  const { isEventSaved } = window.__CEH_STORE__ || {};
+
+  buttons.forEach((button) => {
+    let saved = false;
+
+    if (typeof isEventSaved === "function") {
+      saved = isEventSaved(event.id);
+    } else {
+      const savedIds = JSON.parse(
+        localStorage.getItem("ceh:saved") || "[]",
+      );
+
+      saved = Array.isArray(savedIds) &&
+        savedIds.includes(event.id);
+    }
+
+    button.classList.toggle("is-saved", saved);
+    button.setAttribute("aria-pressed", String(saved));
+
+    const label = button.querySelector("[data-save-label]");
+
+    if (label) {
+      label.textContent = saved ? "Saved" : "Save";
+    }
+
+    button.title = saved ? "Remove from saved events" : "Save event";
+  });
+}
+
+function setupSaveButton(event) {
+  const buttons = document.querySelectorAll(
+    '[data-action="save-event"]',
+  );
+
+  buttons.forEach((button) => {
+    button.onclick = () => {
+      const saved = button.classList.contains("is-saved");
+
+      if (saved) {
+        unsaveEvent(event.id);
+        showToast("Event removed from saved events.", "info");
+      } else {
+        saveEvent(event.id);
+        showToast("Event saved successfully.", "success");
+      }
+
+      renderSaveButton(event);
+    };
+  });
+}
+
+function setupShareButton(event) {
+  const button = $("#share-event");
+
+  if (!button) {
+    return;
+  }
+
+  button.onclick = async () => {
+    const shareData = {
+      title: event.title || "Campus Event",
+      text: `Check out ${event.title || "this event"} on Campus Event Hub.`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        return;
+      }
+
+      await navigator.clipboard.writeText(window.location.href);
+      showToast("Event link copied to clipboard.", "success");
+    } catch (error) {
+      if (error?.name !== "AbortError") {
+        showToast("Unable to share this event.", "error");
+      }
+    }
+  };
+}
+
+function setupBackButton() {
+  const button = $("#event-back");
+
+  if (!button) {
+    return;
+  }
+
+  button.onclick = (event) => {
+    if (window.history.length > 1) {
+      event.preventDefault();
+      window.history.back();
+    }
+  };
+}
+
+/* ------------------------------------------------------------
+   Registration
+------------------------------------------------------------ */
+
+function renderRegistrationSection(event) {
+  const formContainer = $("#reg-form-container");
+  const form = $("#event-reg-form");
+  const authGate = $("#reg-auth-gate");
+  const confirmedCard = $("#reg-confirmed-card");
+  const fullBanner = $("#reg-full-banner");
+  const completedBanner = $("#reg-completed-banner");
+  const alertBox = $("#reg-alert-box");
+
+  const capacityEl = $("#reg-capacity-val");
+  const availableEl = $("#reg-available-val");
+  const availableStat = $("#reg-available-stat");
+
+  const user = getCurrentUser();
+  const state = getEventState(event);
+  const stats = getEventCapacityStats(event);
+
+  const registration = user
+    ? getUserRegistration(event.id, user.email)
+    : null;
+
+  /* Reset all states */
+  [
+    formContainer,
+    authGate,
+    confirmedCard,
+    fullBanner,
+    completedBanner,
+  ].forEach((element) => {
+    if (element) {
+      element.hidden = true;
+    }
+  });
+
+  if (alertBox) {
+    alertBox.hidden = true;
+    alertBox.textContent = "";
+  }
+
+  /* Capacity information */
+  if (capacityEl) {
+    capacityEl.textContent =
+      stats.total > 0 ? String(stats.total) : "∞";
+  }
+
+  if (availableEl) {
+    availableEl.textContent =
+      stats.total > 0 ? String(stats.available) : "Open";
+  }
+
+  if (availableStat) {
+    availableStat.classList.toggle(
+      "is-low",
+      stats.total > 0 &&
+        stats.available > 0 &&
+        stats.available <= Math.max(5, Math.ceil(stats.total * 0.1)),
+    );
+
+    availableStat.classList.toggle(
+      "is-full",
+      stats.total > 0 && stats.available === 0,
+    );
+  }
+
+  /* Event has already ended */
+  if (state === "completed") {
+    if (completedBanner) {
+      completedBanner.hidden = false;
+    }
+
+    return;
+  }
+
+  /* User is not logged in */
+  if (!user) {
+    if (authGate) {
+      authGate.hidden = false;
+
+      const loginLink = authGate.querySelector(
+        '[data-action="registration-login"]',
+      );
+
+      if (loginLink) {
+        const redirect =
+          `${window.location.pathname}${window.location.search}${window.location.hash}`;
+
+        loginLink.href =
+          `login.html?redirect=${encodeURIComponent(redirect)}`;
+      }
+    }
+
+    return;
+  }
+
+  /* User already registered */
+  if (registration) {
+    if (confirmedCard) {
+      confirmedCard.hidden = false;
+
+      const registeredAt = confirmedCard.querySelector(
+        "[data-registration-date]",
+      );
+
+      if (registeredAt) {
+        registeredAt.textContent = registration.registeredAt
+          ? new Date(registration.registeredAt).toLocaleString()
+          : "Just now";
+      }
+
+      const nameEl = confirmedCard.querySelector(
+        "[data-registration-name]",
+      );
+
+      if (nameEl) {
+        nameEl.textContent =
+          registration.userName ||
+          user.name ||
+          user.fullName ||
+          "Attendee";
+      }
+
+      const emailEl = confirmedCard.querySelector(
+        "[data-registration-email]",
+      );
+
+      if (emailEl) {
+        emailEl.textContent =
+          registration.userEmail ||
+          user.email ||
+          "";
+      }
+
+      const studentIdEl = confirmedCard.querySelector(
+        "[data-registration-studentid]",
+      );
+
+      if (studentIdEl) {
+        studentIdEl.textContent =
+          registration.studentId || "Not provided";
+      }
+
+      const cancelButton = confirmedCard.querySelector(
+        '[data-action="cancel-registration"], #btn-cancel-reg',
+      );
+
+      if (cancelButton) {
+        cancelButton.onclick = () => {
+          const confirmed = window.confirm(
+            "Are you sure you want to cancel your registration?",
+          );
+
+          if (!confirmed) {
+            return;
+          }
+
+          const result = cancelEventRegistration(
+            event.id,
+            user.email,
+          );
+
+          if (!result.ok) {
+            showRegistrationAlert(
+              result.error || "Unable to cancel registration.",
+              "error",
+            );
+            return;
+          }
+
+          showToast(
+            "Your registration has been cancelled.",
+            "success",
+          );
+
+          renderRegistrationSection(event);
+        };
+      }
+    }
+
+    return;
+  }
+
+  /* Event is full */
+  if (stats.isFull && stats.total > 0) {
+    if (fullBanner) {
+      fullBanner.hidden = false;
+    }
+
+    return;
+  }
+
+  /* Show registration form */
+  if (formContainer) {
+    formContainer.hidden = false;
+  }
+
+  const nameInput = $("#reg-name");
+  const emailInput = $("#reg-email");
+  const studentIdInput = $("#reg-studentid");
+  const notesInput = $("#reg-notes");
+
+  if (nameInput) {
+    nameInput.value =
+      user.name ||
+      user.fullName ||
+      "";
+  }
+
+  if (emailInput) {
+    emailInput.value = user.email || "";
+    emailInput.readOnly = true;
+    emailInput.setAttribute("aria-readonly", "true");
+  }
+
+  if (!form) {
+    return;
+  }
+
+  form.onsubmit = (submitEvent) => {
+    submitEvent.preventDefault();
+
+    clearRegistrationErrors();
+
+    const latestUser = getCurrentUser();
+
+    if (!latestUser) {
+      showRegistrationAlert(
+        "Your session has expired. Please log in again.",
+        "error",
+      );
+      return;
+    }
+
+    const name = nameInput?.value.trim() || "";
+    const studentId = studentIdInput?.value.trim() || "";
+    const notes = notesInput?.value.trim() || "";
+    const email = String(latestUser.email || "")
+      .trim()
+      .toLowerCase();
+
+    let valid = true;
+
+    if (name.length < 2) {
+      setFieldError(
+        "reg-name",
+        "Please enter your full name.",
+      );
+      valid = false;
+    }
+
+    if (!email || !isValidEmail(email)) {
+      setFieldError(
+        "reg-email",
+        "A valid account email is required.",
+      );
+      valid = false;
+    }
+
+    if (studentId && studentId.length < 3) {
+      setFieldError(
+        "reg-studentid",
+        "Please enter a valid student ID.",
+      );
+      valid = false;
+    }
+
+    if (!valid) {
+      showRegistrationAlert(
+        "Please correct the highlighted fields.",
+        "error",
+      );
+      return;
+    }
+
+    /* Re-check event state immediately before registration */
+    const latestState = getEventState(event);
+
+    if (latestState === "completed") {
+      showRegistrationAlert(
+        "This event has already ended.",
+        "error",
+      );
+      renderRegistrationSection(event);
+      return;
+    }
+
+    /* Re-check capacity immediately before registration */
+    const latestStats = getEventCapacityStats(event);
+
+    if (latestStats.isFull && latestStats.total > 0) {
+      showRegistrationAlert(
+        "Sorry, this event is now full.",
+        "error",
+      );
+      renderRegistrationSection(event);
+      return;
+    }
+
+    /* Prevent duplicate registration */
+    const existingRegistration = getUserRegistration(
+      event.id,
+      email,
+    );
+
+    if (existingRegistration) {
+      showRegistrationAlert(
+        "You are already registered for this event.",
+        "error",
+      );
+      renderRegistrationSection(event);
+      return;
+    }
+
+    const submitButton = form.querySelector(
+      'button[type="submit"]',
+    );
+
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.dataset.originalText =
+        submitButton.textContent;
+      submitButton.textContent = "Registering...";
+    }
+
+    const result = registerForEvent({
+      eventId: event.id,
+      userId: latestUser.id || latestUser.userId || "",
+      userEmail: email,
+      userName: name,
+      studentId,
+      notes,
+    });
+
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent =
+        submitButton.dataset.originalText ||
+        "Register";
+    }
+
+    if (!result.ok) {
+      showRegistrationAlert(
+        result.error || "Registration failed. Please try again.",
+        "error",
+      );
+      return;
+    }
+
+    showToast(
+      "You're registered! See you at the event.",
+      "success",
+    );
+
+    renderRegistrationSection(event);
+  };
+}
+
+/* ------------------------------------------------------------
+   Registration Validation
+------------------------------------------------------------ */
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function setFieldError(inputId, message) {
+  const input = $(`#${inputId}`);
+  const error = $(`#${inputId}-error`);
+
+  if (input) {
+    input.classList.add("is-invalid");
+    input.setAttribute("aria-invalid", "true");
+  }
+
+  if (error) {
+    error.textContent = message;
+    error.hidden = false;
+  }
+}
+
+function clearRegistrationErrors() {
+  document
+    .querySelectorAll(".event-reg-field .is-invalid")
+    .forEach((input) => {
+      input.classList.remove("is-invalid");
+      input.removeAttribute("aria-invalid");
+    });
+
+  document
+    .querySelectorAll(
+      "#reg-name-error, #reg-email-error, #reg-studentid-error, #reg-notes-error",
+    )
+    .forEach((error) => {
+      error.textContent = "";
+      error.hidden = true;
+    });
+
+  const alertBox = $("#reg-alert-box");
+
+  if (alertBox) {
+    alertBox.hidden = true;
+    alertBox.textContent = "";
+  }
+}
+
+function showRegistrationAlert(message, type = "error") {
+  const alertBox = $("#reg-alert-box");
+
+  if (!alertBox) {
+    showToast(message, type);
+    return;
+  }
+
+  alertBox.textContent = message;
+  alertBox.dataset.type = type;
+  alertBox.hidden = false;
+}
+
+/* ------------------------------------------------------------
+   Boot
+------------------------------------------------------------ */
+
+function getEventIdFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const queryId = params.get("id");
+
+  if (queryId) {
+    return queryId;
+  }
+
+  const hash = window.location.hash.replace(/^#/, "");
+
+  if (hash.startsWith("id=")) {
+    return new URLSearchParams(hash).get("id");
+  }
+
+  if (hash) {
+    return hash;
+  }
+
+  return null;
+}
+
 function boot() {
   initNav();
   renderAuthNav();
 
-  // Read event id from URL query parameter (?id=...)
-  const params = new URLSearchParams(window.location.search);
-  let eventId = params.get("id");
-
-  // Fallback: support hash routing if someone accesses #/event/:id or #intro-to-ux-design
-  if (!eventId && window.location.hash) {
-    const cleaned = window.location.hash.replace(/^#\/?(event\/)?/, "").split("?")[0];
-    if (cleaned) eventId = cleaned;
-  }
+  const eventId = getEventIdFromUrl();
 
   if (!eventId) {
-    renderNotFound(null);
+    renderNotFound();
     return;
   }
 
-  eventId = eventId.trim();
-  const matchedEvent = EVENTS.find((item) => item.id === eventId);
+  const sourceEvent = EVENTS.find(
+    (event) => String(event.id) === String(eventId),
+  );
 
-  if (!matchedEvent) {
-    renderNotFound(eventId);
+  if (!sourceEvent) {
+    renderNotFound();
     return;
   }
 
-  renderEventDetails(matchedEvent);
+  /*
+   * Clone the event so optional test query parameters
+   * do not mutate the original mock data.
+   */
+  const event = {
+    ...sourceEvent,
+  };
+
+  const params = new URLSearchParams(window.location.search);
+
+  /* Optional countdown testing:
+     event-details.html?id=event-1&seconds=30
+  */
+  const testSeconds = Number(params.get("seconds"));
+
+  if (Number.isFinite(testSeconds) && testSeconds >= 0) {
+    event.startDateTime = new Date(
+      Date.now() + testSeconds * 1000,
+    ).toISOString();
+  }
+
+  /* Optional capacity testing:
+     event-details.html?id=event-1&capacity=2
+  */
+  const testCapacity = Number(params.get("capacity"));
+
+  if (Number.isFinite(testCapacity) && testCapacity >= 0) {
+    event.capacity = testCapacity;
+  }
+
+  renderEventDetails(event);
 }
 
-if (typeof document !== "undefined") {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot);
-  } else {
-    boot();
-  }
-}
+/* ------------------------------------------------------------
+   Page Events
+------------------------------------------------------------ */
+
+document.addEventListener("DOMContentLoaded", boot);
+
+window.addEventListener("hashchange", () => {
+  boot();
+});
+
+window.addEventListener("popstate", () => {
+  boot();
+});
+
+window.addEventListener("beforeunload", clearTimers);

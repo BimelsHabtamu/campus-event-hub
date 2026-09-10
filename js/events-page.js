@@ -1,10 +1,4 @@
-/* ============================================================
-   events-page.js — Controller for events.html (Browse Events)
-   ------------------------------------------------------------
-   Renders the complete event list with live search, category/date
-   filtering, sorting, bookmarking, and directs "View Details" to
-   event-details.html?id=${event.id}.
-   ============================================================ */
+
 
 import { CATEGORIES, CATEGORY_LABEL, EVENTS } from "./data.js";
 import { formatDateLabel, formatTime } from "./utils.js";
@@ -12,11 +6,23 @@ import { applyFilter, sortEvents, filterToParams, filterFromParams } from "./fil
 import { isEventSaved, saveEvent, unsaveEvent } from "./store.js";
 import { initNav } from "./site-nav.js";
 import { getCurrentUser, logout } from "./auth.js";
-import { getEventState } from "./event-details.js";
+import { getEventStateVisuals } from "./event-status.js";
 
-/* ------------------------------------------------------------
-   Navbar User Session Menu
-   ------------------------------------------------------------ */
+const SAMPLE_EVENT_IMAGES = {
+  workshop: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=900&q=80",
+  hackathon: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=900&q=80",
+  career: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=900&q=80",
+  seminar: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=900&q=80",
+  sports: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=900&q=80",
+  competition: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=900&q=80",
+  cultural: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=900&q=80",
+};
+
+function getEventImage(event) {
+  return event.image || SAMPLE_EVENT_IMAGES[event.category] || SAMPLE_EVENT_IMAGES.workshop;
+}
+
+
 let detachUserMenu = null;
 function renderAuthNav() {
   const actions = document.getElementById("nav-actions");
@@ -70,13 +76,23 @@ function renderAuthNav() {
 
   const dashItem = document.createElement("a");
   dashItem.className = "user-menu-item";
-  dashItem.href = "app.html#/dashboard";
-  dashItem.textContent = "Dashboard";
+  dashItem.href = user.role === "admin" ? "admin-dashboard.html" : "app.html#/dashboard";
+  dashItem.textContent = user.role === "admin" ? "Admin Dashboard" : "Dashboard";
 
   const savedItem = document.createElement("a");
   savedItem.className = "user-menu-item";
   savedItem.href = "app.html#/saved";
   savedItem.textContent = "Saved events";
+
+  const profileItem = document.createElement("a");
+  profileItem.className = "user-menu-item";
+  profileItem.href = "profile.html";
+  profileItem.textContent = "Profile";
+
+  const settingsItem = document.createElement("a");
+  settingsItem.className = "user-menu-item";
+  settingsItem.href = "settings.html";
+  settingsItem.textContent = "Settings";
 
   const logoutBtn = document.createElement("button");
   logoutBtn.type = "button";
@@ -87,7 +103,7 @@ function renderAuthNav() {
     renderAuthNav();
   });
 
-  dropdown.append(dashItem, savedItem, logoutBtn);
+  dropdown.append(dashItem, savedItem, profileItem, settingsItem, logoutBtn);
   menu.append(trigger, dropdown);
   actions.appendChild(menu);
 
@@ -114,6 +130,22 @@ function renderAuthNav() {
 /* ------------------------------------------------------------
    Events Page Controller
    ------------------------------------------------------------ */
+function applyTopbarSearch() {
+  const params = new URLSearchParams(window.location.search);
+  const search = params.get("search");
+
+  if (!search) return;
+
+  const searchInput = document.querySelector(
+    "#search-input, #event-search, #events-search, [data-event-search]",
+  );
+
+  if (!searchInput) return;
+
+  searchInput.value = search;
+  searchInput.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
 function initEventsPage() {
   const grid = document.getElementById("events-grid");
   const emptyState = document.getElementById("events-empty");
@@ -153,18 +185,19 @@ function initEventsPage() {
     const card = document.createElement("article");
     card.className = "card card-hover event-card";
 
-    const state = getEventState(event);
+    const state = getEventStateVisuals(event);
 
     const cover = document.createElement("div");
     cover.className = "event-card-cover";
 
     const img = document.createElement("img");
     img.className = "event-card-image";
-    img.src = event.image || "../images/placeholder-event.svg";
+    img.src = getEventImage(event);
     img.alt = event.title;
     img.loading = "lazy";
     img.onerror = () => {
-      img.src = "../images/placeholder-event.svg";
+      img.onerror = null;
+      img.src = SAMPLE_EVENT_IMAGES[event.category] || "../images/placeholder-event.svg";
     };
 
     const badgesWrap = document.createElement("div");
@@ -307,6 +340,7 @@ function boot() {
   initNav();
   renderAuthNav();
   initEventsPage();
+  applyTopbarSearch();
 }
 
 if (typeof document !== "undefined") {

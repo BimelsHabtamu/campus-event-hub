@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Event details, schedule, location, and countdown on Campus Event & Activity Hub.">
   <title>Event Details · Campus Event &amp; Activity Hub</title>
-  <link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../images/logo/logo.png" type="image/png">
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/components.css">
@@ -33,11 +33,7 @@
       </button>
 
       <a class="brand" href="index.html">
-        <span class="brand-mark">
-          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-            <path fill="currentColor" d="M12 2.6l2.3 5.4 5.9.6-4.4 4 1.3 5.7L12 15.5l-5.2 2.8 1.4-5.7-4.4-4 5.9-.6z"/>
-          </svg>
-        </span>
+        <img class="brand-img" src="../images/logo/logo.png" alt="CampusHub" width="36" height="36">
         <span class="brand-name">Campus<em>Hub</em></span>
       </a>
 
@@ -192,33 +188,154 @@
               </div>
             </section>
 
-            <!-- Registration Information (Informational for Stage 5) -->
-            <section class="event-registration-card">
+            <!-- Interactive Event Registration Module (Stage 6) -->
+            <section class="event-registration-card" id="event-registration-module">
               <span class="event-registration-badge">
                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:1rem;height:1rem;"><path d="M9 12l2 2 4-4m5.6 2.4A9 9 0 113.6 8.6"/></svg>
-                Registration &amp; Access
+                Registration &amp; Booking
               </span>
-              <h3 class="event-registration-title">Event Registration Info</h3>
+              <h2 class="event-registration-title">Event Registration</h2>
               <p class="event-registration-desc">
-                Admission is free for all currently enrolled students and campus staff. Seating and supplies are allocated on a first-come, first-served basis up to venue capacity.
+                Reserve your seat for this campus event. Admission is free with a valid university student ID.
               </p>
+
+              <!-- Dynamic Capacity & Seat Stats -->
               <div class="event-registration-meta-grid">
                 <div class="event-reg-stat">
                   <span class="event-reg-stat-label">Total Capacity</span>
                   <span id="reg-capacity-val" class="event-reg-stat-val">—</span>
                 </div>
                 <div class="event-reg-stat">
+                  <span class="event-reg-stat-label">Available Seats</span>
+                  <span id="reg-available-val" class="event-reg-stat-val">—</span>
+                </div>
+                <div class="event-reg-stat">
                   <span class="event-reg-stat-label">Admission</span>
                   <span class="event-reg-stat-val">Free (Student ID)</span>
                 </div>
-                <div class="event-reg-stat">
-                  <span class="event-reg-stat-label">Online Booking</span>
-                  <span class="event-reg-stat-val">Opens in Stage 6</span>
+              </div>
+
+              <!-- Message feedback alert -->
+              <div id="reg-alert-box" class="event-reg-alert" role="alert" hidden style="margin-bottom:var(--spacing-md);"></div>
+
+              <!-- State 1: Logged-Out Prompt -->
+              <div id="reg-auth-gate" class="event-reg-auth-gate" hidden>
+                <div class="event-reg-auth-gate-text">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4"/>
+                  </svg>
+                  <div>
+                    <strong>Sign in to register</strong>
+                    <p style="margin:0;font-size:var(--text-xs);color:var(--color-text-muted);">
+                      You must be signed in with your university account to register for events.
+                    </p>
+                  </div>
+                </div>
+                <div style="display:flex;gap:var(--spacing-xs);flex-wrap:wrap;">
+                  <a id="reg-login-btn" class="btn btn-primary btn-sm" href="login.html">Log in to register</a>
+                  <a class="btn btn-ghost btn-sm" href="register.html">Create account</a>
                 </div>
               </div>
-              <button class="btn btn-primary btn-lg" type="button" disabled style="width:100%;">
-                Register for Event (Coming in Stage 6)
-              </button>
+
+              <!-- State 2: Already Registered Card -->
+              <div id="reg-confirmed-card" class="event-reg-confirmed-card" hidden>
+                <div class="event-reg-confirmed-header">
+                  <span class="event-reg-confirmed-icon" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.6 2.4A9 9 0 113.6 8.6"/></svg>
+                  </span>
+                  <div>
+                    <strong style="font-size:var(--text-md);color:#15803d;display:block;">You are registered for this event!</strong>
+                    <span style="font-size:var(--text-xs);color:var(--color-text-muted);" id="reg-confirmed-time">Confirmation saved</span>
+                  </div>
+                </div>
+
+                <div class="event-reg-details-list">
+                  <div class="event-reg-detail-item">
+                    <span class="event-reg-detail-label">Attendee</span>
+                    <span id="reg-confirmed-name" class="event-reg-detail-value">—</span>
+                  </div>
+                  <div class="event-reg-detail-item">
+                    <span class="event-reg-detail-label">University Email</span>
+                    <span id="reg-confirmed-email" class="event-reg-detail-value">—</span>
+                  </div>
+                  <div class="event-reg-detail-item">
+                    <span class="event-reg-detail-label">Student ID</span>
+                    <span id="reg-confirmed-id" class="event-reg-detail-value">—</span>
+                  </div>
+                </div>
+
+                <div class="event-reg-cancel-wrap">
+                  <span style="font-size:var(--text-xs);color:var(--color-text-muted);margin-right:auto;">
+                    Can no longer attend? Free up your seat:
+                  </span>
+                  <button id="btn-cancel-reg" data-action="cancel-registration" class="btn btn-secondary btn-sm" type="button" style="color:var(--danger-600,#dc2626);border-color:#fca5a5;">
+                    Cancel Registration
+                  </button>
+                </div>
+              </div>
+
+              <!-- State 3: Event Full Notice -->
+              <div id="reg-full-banner" class="event-reg-full-banner" hidden>
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9"/>
+                  <path d="M12 8v4M12 16h.01"/>
+                </svg>
+                <div>
+                  <strong>Registration Closed — Event is Full</strong>
+                  <p style="margin:0;font-size:var(--text-xs);opacity:0.9;">
+                    All available seats have been booked. Check back later in case attendees cancel.
+                  </p>
+                </div>
+              </div>
+
+              <!-- State 4: Event Completed Notice -->
+              <div id="reg-completed-banner" class="event-reg-full-banner" hidden style="background:var(--color-surface-muted);border-color:var(--color-border);color:var(--color-text-muted);">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--color-text-subtle);">
+                  <circle cx="12" cy="12" r="9"/>
+                  <path d="M12 8v4M12 16h.01"/>
+                </svg>
+                <div>
+                  <strong>Registration Closed</strong>
+                  <p style="margin:0;font-size:var(--text-xs);opacity:0.9;">
+                    This event has already concluded.
+                  </p>
+                </div>
+              </div>
+
+              <!-- State 5: Active Registration Form -->
+              <div id="reg-form-container" hidden>
+                <form id="event-reg-form" class="event-reg-form" novalidate>
+                  <div class="event-reg-grid">
+                    <div class="event-reg-field">
+                      <label class="form-label" for="reg-name">Full name</label>
+                      <input id="reg-name" class="input" type="text" placeholder="First and last name" required autocomplete="name">
+                      <span id="reg-name-error" class="field-error" hidden></span>
+                    </div>
+
+                    <div class="event-reg-field">
+                      <label class="form-label" for="reg-email">University email</label>
+                      <input id="reg-email" class="input" type="email" placeholder="you@university.edu" required autocomplete="email">
+                      <span id="reg-email-error" class="field-error" hidden></span>
+                    </div>
+                  </div>
+
+                  <div class="event-reg-field">
+                    <label class="form-label" for="reg-studentid">Student ID / Department</label>
+                    <input id="reg-studentid" class="input" type="text" placeholder="e.g. WLU/1042/15 or Department of CS" required>
+                    <span id="reg-studentid-error" class="field-error" hidden></span>
+                  </div>
+
+                  <div class="event-reg-field">
+                    <label class="form-label" for="reg-notes">Special requirements or notes (optional)</label>
+                    <textarea id="reg-notes" class="input" rows="2" placeholder="Dietary restrictions, accessibility requests, or expectations…"></textarea>
+                  </div>
+
+                  <button id="btn-submit-reg" class="btn btn-primary btn-lg" type="submit" style="width:100%;margin-top:var(--spacing-xs);">
+                    Confirm Event Registration
+                  </button>
+                </form>
+              </div>
             </section>
           </div>
 
@@ -319,9 +436,7 @@
     <div class="container footer-main">
       <div class="footer-brand">
         <a class="brand" href="index.html">
-          <span class="brand-mark">
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2.6l2.3 5.4 5.9.6-4.4 4 1.3 5.7L12 15.5l-5.2 2.8 1.4-5.7-4.4-4 5.9-.6z"/></svg>
-          </span>
+          <img class="brand-img" src="../images/logo/logo.png" alt="CampusHub" width="36" height="36">
           <span class="brand-name">Campus<em>Hub</em></span>
         </a>
         <p>The community-built event platform for university students — discover what your campus has to offer.</p>

@@ -50,7 +50,7 @@
   --color-border-strong: var(--gray-300);
 
   --color-text: var(--gray-900);
-  --color-text-muted: var(--gray-600);
+  --color-text-muted: var(--gray-500);
   --color-text-subtle: var(--gray-400);
   --color-inverse: #ffffff;
 
@@ -66,45 +66,50 @@
   --brand-800: #1e40af;
   --brand-900: #1e3a8a;
 
-  --color-primary: var(--brand-600);
-  --color-primary-hover: var(--brand-700);
+  --color-primary: var(--brand-700);
+  --color-primary-hover: var(--brand-800);
   --color-primary-subtle: var(--brand-50);
   --color-primary-text: var(--brand-700);
 
-  /* ---------- Color Â· secondary (violet) ---------- */
-  --violet-500: #8b5cf6;
-  --violet-600: #7c3aed;
-  --violet-700: #6d28d9;
-  --violet-50: #f5f3ff;
+  /* ---------- Color Â· secondary (navy accent) ---------- */
+  --color-secondary: var(--brand-900);
+  --color-secondary-subtle: var(--brand-100);
 
-  --color-secondary: var(--violet-600);
-  --color-secondary-subtle: var(--violet-50);
-
-  /* ---------- Color Â· accent (cyan) ---------- */
-  --cyan-500: #06b6d4;
-  --color-accent: var(--cyan-500);
+  /* ---------- Color Â· accent (blue) ---------- */
+  --color-accent: var(--brand-500);
 
   /* ---------- Color Â· semantic ---------- */
-  --success-50: #ecfdf5;
-  --success-600: #059669;
-  --success-700: #047857;
+  --success-50: #f0fdf4;
+  --success-100: #dcfce7;
+  --success-200: #bbf7d0;
+  --success-500: #22c55e;
+  --success-600: #16a34a;
+  --success-700: #15803d;
+  --success-800: #166534;
   --color-success: var(--success-600);
 
   --warning-50: #fffbeb;
-  --warning-600: #d97706;
+  --warning-100: #fef3c7;
+  --warning-500: #f59e0b;
+  --warning-600: #f59e0b;
+  --warning-700: #d97706;
   --color-warning: var(--warning-600);
 
   --danger-50: #fef2f2;
+  --danger-200: #fecaca;
+  --danger-300: #fca5a5;
+  --danger-500: #ef4444;
   --danger-600: #dc2626;
   --danger-700: #b91c1c;
+  --danger-800: #991b1b;
   --danger-600-subtle: #fee2e2;
   --color-danger: var(--danger-600);
   --color-danger-hover: var(--danger-700);
 
   /* ---------- Gradients ---------- */
-  --gradient-brand: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  --gradient-brand-soft: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
-  --gradient-visual: linear-gradient(150deg, #1d4ed8 0%, #6d28d9 55%, #be185d 105%);
+  --gradient-brand: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
+  --gradient-brand-soft: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  --gradient-visual: linear-gradient(150deg, #1d4ed8 0%, #1e3a8a 100%);
 
   /* ---------- Spacing (4 px base scale) ---------- */
   --spacing-2xs: 0.25rem;   /*  4 */
@@ -140,7 +145,7 @@
   --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
   --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.12);
   --shadow-xl: 0 24px 48px rgba(15, 23, 42, 0.16);
-  --shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.25);
+  --shadow-focus: 0 0 0 3px rgba(29, 78, 216, 0.25);
   --shadow-focus-danger: 0 0 0 3px rgba(220, 38, 38, 0.22);
 
   /* ---------- Breakpoints (min-width media queries) ---------- */

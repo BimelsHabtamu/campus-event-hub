@@ -1,10 +1,3 @@
-/* ============================================================
-   Mock event dataset
-   ------------------------------------------------------------
-   Dates are generated relative to "today" so the demo always
-   holds upcoming + past events. Pure static local data, no backend.
-   ============================================================ */
-
 const CATEGORIES = [
   { id: "workshop", label: "Workshop" },
   { id: "hackathon", label: "Hackathon" },
@@ -27,8 +20,9 @@ function makeDate(dayOffset, hour, minute = 0) {
 
 /* [dayOffset, hour, minute] helpers for readability. */
 const TODAY = () => makeDate(0, 18, 30);
+const NOW_LIVE = () => new Date(Date.now() - 25 * 60000).toISOString();
 
-const EVENTS = [
+const HARDCODED_EVENTS = [
   {
     id: "intro-to-ux-design",
     title: "Intro to UX Design",
@@ -41,7 +35,7 @@ const EVENTS = [
     capacity: 30,
     organizer: "Design Club",
     tags: ["design", "beginner", "hands-on"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/workshop.png",
   },
   {
     id: "react-bootcamp-weekend",
@@ -55,7 +49,7 @@ const EVENTS = [
     capacity: 50,
     organizer: "Web Dev Society",
     tags: ["react", "javascript", "beginner"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/technology.png",
   },
   {
     id: "hackathon-24h",
@@ -69,7 +63,7 @@ const EVENTS = [
     capacity: 120,
     organizer: "Student Innovation Council",
     tags: ["hackathon", "teams", "prizes"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/hackathon.png",
   },
   {
     id: "ml-competition",
@@ -83,7 +77,7 @@ const EVENTS = [
     capacity: 80,
     organizer: "AI & Data Science Club",
     tags: ["machine-learning", "competition", "python"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/technology.png",
   },
   {
     id: "career-fair-spring",
@@ -97,7 +91,7 @@ const EVENTS = [
     capacity: 500,
     organizer: "Career Development Center",
     tags: ["internships", "recruiting", "networking"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/career.png",
   },
   {
     id: "resume-workshop",
@@ -111,7 +105,7 @@ const EVENTS = [
     capacity: 20,
     organizer: "Career Development Center",
     tags: ["resume", "linkedin", "coaching"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/business.png",
   },
   {
     id: "ai-ethics-seminar",
@@ -125,7 +119,7 @@ const EVENTS = [
     capacity: 200,
     organizer: "Faculty of Computer Science",
     tags: ["ethics", "ai", "lecture"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/seminar.png",
   },
   {
     id: "study-abroad-info",
@@ -139,7 +133,7 @@ const EVENTS = [
     capacity: 100,
     organizer: "International Office",
     tags: ["abroad", "scholarships", "info-session"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/seminar.png",
   },
   {
     id: "nvz-indoor-soccer",
@@ -153,7 +147,7 @@ const EVENTS = [
     capacity: 96,
     organizer: "Intramural Sports",
     tags: ["soccer", "5-a-side", "tournament"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/sports.png",
   },
   {
     id: "basketball-3on3",
@@ -167,7 +161,7 @@ const EVENTS = [
     capacity: 48,
     organizer: "Intramural Sports",
     tags: ["basketball", "3x3", "prizes"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/sports.png",
   },
   {
     id: "yoga-morning",
@@ -181,7 +175,7 @@ const EVENTS = [
     capacity: 40,
     organizer: "Student Wellness",
     tags: ["yoga", "wellness", "beginner"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/sports.png",
   },
   {
     id: "debate-championship",
@@ -195,7 +189,7 @@ const EVENTS = [
     capacity: 300,
     organizer: "Debate Society",
     tags: ["debate", "competition", "eliminations"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/seminar.png",
   },
   {
     id: "startup-pitch",
@@ -209,7 +203,7 @@ const EVENTS = [
     capacity: 80,
     organizer: "Entrepreneurship Society",
     tags: ["startup", "pitch", "entrepreneurship"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/business.png",
   },
   {
     id: "chess-open",
@@ -223,7 +217,7 @@ const EVENTS = [
     capacity: 64,
     organizer: "Chess Club",
     tags: ["chess", "swiss-system", "strategy"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/workshop.png",
   },
   {
     id: "international-food-festival",
@@ -237,7 +231,7 @@ const EVENTS = [
     capacity: 800,
     organizer: "International Student Association",
     tags: ["food", "culture", "fundraiser"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/culture.png",
   },
   {
     id: "film-night",
@@ -251,7 +245,7 @@ const EVENTS = [
     capacity: 250,
     organizer: "Campus Entertainment Board",
     tags: ["film", "outdoor", "casual"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/culture.png",
   },
   {
     id: "open-mic-night",
@@ -265,7 +259,7 @@ const EVENTS = [
     capacity: 90,
     organizer: "Arts Collective",
     tags: ["poetry", "music", "open-mic"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/culture.png",
   },
   {
     id: "finance-101-seminar",
@@ -273,13 +267,13 @@ const EVENTS = [
     category: "seminar",
     description:
       "Budgeting, student loans, and investing basics — practical tips you can use immediately.",
-    startDateTime: TODAY(),
+    startDateTime: NOW_LIVE(),
     durationMinutes: 90,
     location: "Economics Hall, Room 305",
     capacity: 120,
     organizer: "Finance Club",
     tags: ["finance", "budgeting", "investing"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/business.png",
   },
   {
     id: "past-graduation-gala",
@@ -293,12 +287,26 @@ const EVENTS = [
     capacity: 400,
     organizer: "Student Government",
     tags: ["gala", "recap", "archive"],
-    image: "../images/placeholder-event.svg",
+    image: "../images/events/gratuate.png",
   },
 ];
 
 if (typeof window !== "undefined") {
-  window.__MOCK_META__ = { count: EVENTS.length, generatedAt: new Date().toISOString() };
+  window.__MOCK_META__ = { count: HARDCODED_EVENTS.length, generatedAt: new Date().toISOString() };
 }
 
-export { CATEGORIES, CATEGORY_LABEL, EVENTS };
+/** Read admin-created events from LocalStorage. */
+function getAdminStoredEvents() {
+  if (typeof window === "undefined" || !window.localStorage) return [];
+  try {
+    const raw = window.localStorage.getItem("ceh:admin-events");
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Merge hardcoded seed events with admin-created events. */
+const EVENTS = [...HARDCODED_EVENTS, ...getAdminStoredEvents()];
+
+export { CATEGORIES, CATEGORY_LABEL, EVENTS, HARDCODED_EVENTS };

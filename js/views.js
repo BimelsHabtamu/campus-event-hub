@@ -147,7 +147,6 @@ function buildCategoryCard(category, index) {
   return card;
 }
 
-/* ---------- view mounts (placeholders until Stage 2) ---------- */
 
 /** Public landing — hero + features live in the HTML; cards mount here once. */
 export function mountHome() {

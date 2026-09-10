@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage your student or administrator profile on CampusHub.">
+  <title>Profile · Campus Event &amp; Activity Hub</title>
+  <link rel="icon" href="../images/logo/logo.png" type="image/png">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout-dashboard.css">
+  <script type="module">
+    import { isLoggedIn, getCurrentUser } from "../js/auth.js";
+
+    if (!isLoggedIn() || !getCurrentUser()) {
+      window.location.replace("login.html");
+    }
+  </script>
+</head>
+<body class="app-shell" id="app-shell">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- ==================== Sidebar ==================== -->
+  <aside class="sidebar" id="sidebar" aria-label="Sidebar">
+    <div class="sidebar-brand">
+      <a class="brand" href="index.html" title="Back to public site">
+        <img class="brand-img" src="../images/logo/logo.png" alt="CampusHub" width="36" height="36">
+        <span class="brand-name">Campus<em>Hub</em></span>
+      </a>
+      <button class="icon-btn sidebar-close" id="sidebar-close" type="button" aria-label="Close sidebar">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav" id="sidebar-nav" aria-label="Main navigation">
+      <!-- Student section (shown if student) -->
+      <div class="nav-section" id="student-nav-section">
+        <span class="nav-section-title">Main</span>
+        <a class="nav-item" href="app.html#/dashboard" id="nav-student-dashboard">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a class="nav-item" href="app.html#/my-events">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+          <span class="nav-label">My Events</span>
+        </a>
+        <a class="nav-item" href="app.html#/saved">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5h12V20l-6-4-6 4z"/></svg>
+          <span class="nav-label">Saved</span>
+        </a>
+        <a class="nav-item" href="app.html#/calendar">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="8" cy="14" r="1"/><circle cx="12" cy="14" r="1"/><circle cx="16" cy="14" r="1"/></svg>
+          <span class="nav-label">Calendar</span>
+        </a>
+      </div>
+
+      <!-- Admin section (shown if admin) -->
+      <div class="nav-section" id="admin-nav-section" hidden>
+        <span class="nav-section-title">Admin Management</span>
+        <a class="nav-item" href="admin-dashboard.html" id="nav-admin-dashboard">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          <span class="nav-label">Admin Dashboard</span>
+        </a>
+        <a class="nav-item" href="admin-dashboard.html#/manage-events">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+          <span class="nav-label">Manage Events</span>
+        </a>
+        <a class="nav-item" href="admin-dashboard.html#/registrations">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
+          <span class="nav-label">Registrations</span>
+        </a>
+      </div>
+
+      <!-- Account section (both) -->
+      <div class="nav-section">
+        <span class="nav-section-title">Account</span>
+        <a class="nav-item active" href="profile.html" aria-current="page">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.5 4.2-5 8-5s6.5 1.5 8 5"/></svg>
+          <span class="nav-label">Profile</span>
+        </a>
+        <a class="nav-item" href="settings.html">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+          <span class="nav-label">Settings</span>
+        </a>
+      </div>
+
+      <a class="nav-item nav-item-danger" id="logout-link" href="login.html">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        <span class="nav-label">Logout</span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebar-overlay" hidden="hidden"></div>
+
+  <!-- ==================== Main column ==================== -->
+  <div class="app-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="icon-btn sidebar-toggle" id="sidebar-toggle" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle sidebar">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <h1 class="page-title" id="page-title">Profile</h1>
+      </div>
+
+      <div class="topbar-right">
+        <span class="badge badge-brand" id="topbar-role-badge">Student</span>
+        <a class="user-chip" href="profile.html" aria-label="Your profile">
+          <span class="avatar" aria-hidden="true" id="topbar-avatar">--</span>
+          <span class="user-chip-meta">
+            <span class="user-chip-name" id="topbar-name">Loading…</span>
+            <span class="user-chip-role" id="topbar-role">Student</span>
+          </span>
+        </a>
+      </div>
+    </header>
+
+    <main id="main-content" class="app-content">
+      <header class="page-header">
+        <h1>User Profile</h1>
+        <p>View and update your personal information, student credentials, and account settings.</p>
+      </header>
+
+      <div class="profile-grid">
+        <!-- Profile Identity Card -->
+        <div class="card profile-side">
+          <span class="avatar avatar-lg" id="profile-avatar" aria-hidden="true">--</span>
+          <div>
+            <p class="text-bold" id="profile-display-name" style="font-size:var(--text-lg);font-weight:var(--weight-bold);margin-bottom:0.25rem;">—</p>
+            <p class="text-sm text-muted" id="profile-display-email">—</p>
+          </div>
+          <span class="badge badge-brand" id="profile-role-badge">Student</span>
+
+          <div style="width:100%;border-top:var(--border-width) solid var(--color-border);padding-top:var(--spacing-md);margin-top:var(--spacing-xs);text-align:left;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:var(--spacing-xs);font-size:var(--text-xs);">
+              <span class="text-muted">Student ID</span>
+              <strong id="profile-display-student-id">—</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:var(--spacing-xs);font-size:var(--text-xs);">
+              <span class="text-muted">Account Type</span>
+              <strong id="profile-display-account-type">Student</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-xs);">
+              <span class="text-muted">Member Since</span>
+              <strong id="profile-display-member-since">—</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Personal Information & Edit Form Card -->
+        <div class="card">
+          <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+            <h2 class="card-title">Personal Information</h2>
+            <button class="btn btn-sm btn-secondary" id="profile-edit-btn" type="button">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:1rem;height:1rem;margin-right:0.35rem;"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit Profile
+            </button>
+          </div>
+          <div class="card-body">
+            <div id="profile-message" class="form-message" hidden></div>
+
+            <form id="profile-form" novalidate>
+              <div class="form-field profile-photo-field">
+                <label class="form-label" for="profile-photo">Profile photo</label>
+                <input id="profile-photo" class="input" type="file" accept="image/png,image/jpeg,image/webp">
+                <span class="form-hint">Choose a PNG, JPG, or WebP image up to 2 MB. It is saved to your account on this device.</span>
+                <span id="profile-photo-error" class="field-error" role="alert" hidden></span>
+              </div>
+
+              <!-- Name fields -->
+              <div class="form-row cols-2">
+                <div class="form-field">
+                  <label class="form-label" for="profile-first">First name <span class="text-danger">*</span></label>
+                  <input id="profile-first" class="input" type="text" disabled required>
+                  <span id="profile-first-error" class="field-error" role="alert" hidden></span>
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="profile-last">Last name <span class="text-danger">*</span></label>
+                  <input id="profile-last" class="input" type="text" disabled required>
+                  <span id="profile-last-error" class="field-error" role="alert" hidden></span>
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="form-field">
+                <label class="form-label" for="profile-email">University Email</label>
+                <input id="profile-email" class="input" type="email" disabled readonly>
+                <span class="form-hint">Email is your unique account identifier and cannot be altered.</span>
+              </div>
+
+              <!-- Student ID and Role -->
+              <div class="form-row cols-2">
+                <div class="form-field">
+                  <label class="form-label" for="profile-student-id">Student ID</label>
+                  <input id="profile-student-id" class="input" type="text" placeholder="e.g. STU-2024-001" disabled>
+                  <span class="form-hint">Your university-issued identification number.</span>
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="profile-role-input">Role</label>
+                  <input id="profile-role-input" class="input" type="text" disabled readonly>
+                  <span class="form-hint">Role permissions are managed by system administrators.</span>
+                </div>
+              </div>
+
+              <!-- Major and Year -->
+              <div class="form-row cols-2">
+                <div class="form-field">
+                  <label class="form-label" for="profile-major">Major / Department</label>
+                  <input id="profile-major" class="input" type="text" placeholder="e.g. Computer Science" disabled>
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="profile-year">Academic Year</label>
+                  <input id="profile-year" class="input" type="text" placeholder="e.g. 3rd Year" disabled>
+                </div>
+              </div>
+
+              <!-- Form Buttons -->
+              <div class="form-actions" id="profile-actions" style="margin-top:var(--spacing-lg);display:flex;gap:var(--spacing-sm);" hidden>
+                <button class="btn btn-primary" type="submit" id="profile-save-btn">Save changes</button>
+                <button class="btn btn-ghost" type="button" id="profile-cancel-btn">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="../js/profile.js"></script>
+  <noscript>
+    <p class="text-center" style="padding:1rem;">JavaScript is required to manage your profile.</p>
+  </noscript>
+</body>
+</html>
