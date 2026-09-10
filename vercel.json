@@ -3,6 +3,38 @@
     {
       "source": "/",
       "destination": "/html/index.html"
+    },
+    {
+      "source": "/app.html",
+      "destination": "/html/app.html"
+    },
+    {
+      "source": "/events.html",
+      "destination": "/html/events.html"
+    },
+    {
+      "source": "/event-details.html",
+      "destination": "/html/event-details.html"
+    },
+    {
+      "source": "/login.html",
+      "destination": "/html/login.html"
+    },
+    {
+      "source": "/register.html",
+      "destination": "/html/register.html"
+    },
+    {
+      "source": "/admin-dashboard.html",
+      "destination": "/html/admin-dashboard.html"
+    },
+    {
+      "source": "/profile.html",
+      "destination": "/html/profile.html"
+    },
+    {
+      "source": "/settings.html",
+      "destination": "/html/settings.html"
     }
   ]
 }
